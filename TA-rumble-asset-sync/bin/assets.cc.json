@@ -1,0 +1,124 @@
+{
+    "meta": {
+        "apiVersion": "1.0.0"
+    },
+    "tokens": [
+        "__settings__.logging.loglevel",
+        "api_key",
+        "sync_type",
+        "search_filter",
+        "since"
+    ],
+    "global_settings": {
+        "logging": {
+            "level": "{{__settings__.logging.loglevel}}"
+        }
+    },
+    "requests": [
+        {
+            "pre_process": {
+                "skip_conditions": [],
+                "pipeline": [
+                    {
+                        "input": [
+                            "{{since}}"
+                        ],
+                        "method": "set_var",
+                        "output": "_raw_since"
+                    }
+                ]
+            },
+            "request": {
+                "url": "https://console.rumble.run/api/v1.0/export/org/assets/sync/{{sync_type}}/assets.json?search={{search_filter}}&since={{since}}",
+                "method": "GET",
+                "headers": {
+                    "Authorization": "Bearer {{api_key}}"
+                }
+            },
+            "post_process": {
+                "skip_conditions": [
+                    {
+                        "input": [
+                            "{{__response__.body}}",
+                            "$.assets"
+                        ],
+                        "method": "json_empty"
+                    }
+                ],
+                "pipeline": [
+                    {
+                        "input": [
+                            "{{__response__.body}}",
+                            "$.since"
+                        ],
+                        "method": "json_path",
+                        "output": "since"
+                    },
+                    {
+                        "input": [
+                            "{{since != ''}}",
+                            "The value of token 'since' extracted from response cannot be empty!"
+                        ],
+                        "method": "assert_true"
+                    },
+                    {
+                        "input": [
+                            "{{since == _raw_since}}"
+                        ],
+                        "method": "exit_if_true"
+                    },
+                    {
+                        "input": [
+                            "{{since}}"
+                        ],
+                        "method": "set_var",
+                        "output": "_raw_since"
+                    },
+                    {
+                        "input": [
+                            "{{__response__.body}}",
+                            "$.assets"
+                        ],
+                        "method": "json_path",
+                        "output": "__stdout__"
+                    },
+                    {
+                        "input": [
+                            "{{__stdout__}}",
+                            "",
+                            "{{index}}",
+                            "{{host}}",
+                            "{{source}}",
+                            "{{sourcetype}}"
+                        ],
+                        "method": "splunk_xml",
+                        "output": "__stdout__"
+                    },
+                    {
+                        "input": [
+                            "{{__stdout__}}"
+                        ],
+                        "method": "std_output"
+                    }
+                ]
+            },
+            "iteration_mode": {
+                "iteration_count": "100",
+                "stop_conditions": [
+                    {
+                        "input": [
+                            "{{__response__.body}}",
+                            "$.assets"
+                        ],
+                        "method": "json_empty"
+                    }
+                ]
+            },
+            "checkpoint": {
+                "content": {
+                    "since": "{{_raw_since}}"
+                }
+            }
+        }
+    ]
+}
