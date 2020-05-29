@@ -2,7 +2,7 @@
     "meta": {
         "name": "TA-rumble-asset-sync",
         "displayName": "rumble-asset-sync",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "apiVersion": "3.0.0",
         "restRoot": "TA_rumble_asset_sync"
     },
