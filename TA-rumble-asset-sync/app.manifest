@@ -4,7 +4,7 @@
     "title": "rumble-asset-sync",
     "id": {
       "group": null,
-      "name": "TA-rumble-asset-sync",
+      "name": "TA_rumble_asset_sync",
       "version": "1.0.1"
     },
     "author": [

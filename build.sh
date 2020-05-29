@@ -1,1 +1,1 @@
-tar cf TA-rumble-asset-sync.tar TA-rumble-asset-sync && gzip -9 TA-rumble-asset-sync.tar && mv TA-rumble-asset-sync.tar.gz TA-rumble-asset-sync-1.0.1.spl
+tar cf TA_rumble_asset_sync.tar TA_rumble_asset_sync && gzip -9 TA_rumble_asset_sync.tar && mv TA_rumble_asset_sync.tar.gz TA_rumble_asset_sync-1.0.1.spl
