@@ -36,7 +36,7 @@ fields = [
     field.RestField(
         'api_key',
         required=True,
-        encrypted=False,
+        encrypted=True,
         default=None,
         validator=validator.String(
             min_len=0, 
