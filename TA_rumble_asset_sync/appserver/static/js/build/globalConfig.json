@@ -2,7 +2,7 @@
     "meta": {
         "name": "TA_rumble_asset_sync",
         "displayName": "rumble-asset-sync",
-        "version": "1.0.5",
+        "version": "1.0.6",
         "apiVersion": "3.0.0",
         "restRoot": "TA_rumble_asset_sync"
     },
@@ -11,6 +11,61 @@
             "title": "Configuration",
             "description": "Set up your add-on",
             "tabs": [
+                {
+                    "name": "account",
+                    "title": "Account",
+                    "table": {
+                        "header": [
+                            {
+                                "field": "name",
+                                "label": "Account name"
+                            }
+                        ],
+                        "actions": [
+                            "edit",
+                            "delete",
+                            "clone"
+                        ]
+                    },
+                    "entity": [
+                        {
+                            "field": "name",
+                            "label": "Account name",
+                            "type": "text",
+                            "required": true,
+                            "help": "Enter a unique name for this account.",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 50,
+                                    "errorMsg": "Length of Account name should be between 1 and 50"
+                                },
+                                {
+                                    "type": "regex",
+                                    "pattern": "^[a-zA-Z]\\w*$",
+                                    "errorMsg": "Account name must start with a letter and followed by alphabetic letters, digits or underscores."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "api_key",
+                            "label": "API Key",
+                            "type": "text",
+                            "encrypted": true,
+                            "required": true,
+                            "help": "Enter an Export Token or API Key for this account.",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 16,
+                                    "maxLength": 256,
+                                    "errorMsg": "Length of password should be between 16 and 256"
+                                }
+                            ]
+                        }
+                    ]
+                },
                 {
                     "name": "logging",
                     "title": "Logging",
@@ -90,10 +145,6 @@
                         "label": "Status"
                     },
                     {
-                        "field": "api_key",
-                        "label": "API Key"
-                    },
-                    {
                         "field": "sync_type",
                         "label": "Sync Type"
                     },
@@ -104,6 +155,10 @@
                     {
                         "field": "since",
                         "label": "since"
+                    },
+                    {
+                        "field": "global_account",
+                        "label": "Global Account"
                     }
                 ],
                 "actions": [
@@ -173,19 +228,14 @@
                             ]
                         },
                         {
-                            "field": "api_key",
-                            "label": "API Key",
-                            "help": "The API key can be an Export API Token or Organization API Key, both of which can be found in the Rumble Console within the Organization settings.",
+                            "field": "global_account",
+                            "label": "Global Account",
+                            "help": "",
                             "required": true,
-                            "type": "text",
-                            "validators": [
-                                {
-                                    "type": "string",
-                                    "minLength": 0,
-                                    "maxLength": 8192,
-                                    "errorMsg": "Max length of text input is 8192"
-                                }
-                            ]
+                            "type": "singleSelect",
+                            "options": {
+                                "referenceName": "account"
+                            }
                         },
                         {
                             "field": "sync_type",

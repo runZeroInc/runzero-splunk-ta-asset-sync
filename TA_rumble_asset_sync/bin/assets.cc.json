@@ -4,10 +4,10 @@
     },
     "tokens": [
         "__settings__.logging.loglevel",
-        "api_key",
         "sync_type",
         "search_filter",
-        "since"
+        "since",
+        "global_account.api_key"
     ],
     "global_settings": {
         "logging": {
@@ -32,7 +32,7 @@
                 "url": "https://console.rumble.run/api/v1.0/export/org/assets/sync/{{sync_type}}/assets.json?search={{search_filter}}&since={{since}}",
                 "method": "GET",
                 "headers": {
-                    "Authorization": "Bearer {{api_key}}"
+                    "Authorization": "Bearer {{global_account.api_key}}"
                 }
             },
             "post_process": {
