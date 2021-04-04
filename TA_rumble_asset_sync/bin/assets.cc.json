@@ -4,6 +4,13 @@
     },
     "tokens": [
         "__settings__.logging.loglevel",
+        "__settings__.proxy.proxy_enabled", 
+        "__settings__.proxy.proxy_url", 
+        "__settings__.proxy.proxy_port", 
+        "__settings__.proxy.proxy_type", 
+        "__settings__.proxy.proxy_username", 
+        "__settings__.proxy.proxy_rdns", 
+        "__settings__.proxy.proxy_password",
         "sync_type",
         "search_filter",
         "since",
@@ -12,6 +19,15 @@
     "global_settings": {
         "logging": {
             "level": "{{__settings__.logging.loglevel}}"
+        },
+        "proxy": {
+            "enabled": "{{__settings__.proxy.proxy_enabled}}", 
+            "type": "{{__settings__.proxy.proxy_type}}", 
+            "host": "{{__settings__.proxy.proxy_url}}", 
+            "port": "{{__settings__.proxy.proxy_port}}",
+            "username": "{{__settings__.proxy.proxy_username}}", 
+            "password": "{{__settings__.proxy.proxy_password}}",             
+            "rdns": "{{__settings__.proxy.proxy_rdns}}"
         }
     },
     "requests": [
