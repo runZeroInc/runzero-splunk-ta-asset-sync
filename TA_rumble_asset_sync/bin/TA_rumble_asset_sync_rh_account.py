@@ -20,10 +20,16 @@ fields = [
         encrypted=True,
         default=None,
         validator=validator.String(
-            min_len=16, 
+            min_len=16,
             max_len=256,
         )
-    )
+    ),
+    field.RestField(
+        'api_endpoint',
+        required=True,
+        encrypted=False,
+        default='console.rumble.run'
+    ),
 ]
 model = RestModel(fields, name=None)
 

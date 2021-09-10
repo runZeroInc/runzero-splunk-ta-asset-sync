@@ -68,6 +68,12 @@ fields = [
         )
     ),
     field.RestField(
+        'services',
+        required=True,
+        encrypted=False,
+        default=None
+    ),
+    field.RestField(
         'builtin_system_checkpoint_storage_type',
         required=False,
         encrypted=False,

@@ -13,8 +13,10 @@
         "__settings__.proxy.proxy_password",
         "sync_type",
         "search_filter",
+        "services",
         "since",
-        "global_account.api_key"
+        "global_account.api_key",
+        "global_account.api_endpoint"
     ],
     "global_settings": {
         "logging": {
@@ -45,7 +47,7 @@
                 ]
             },
             "request": {
-                "url": "https://console.rumble.run/api/v1.0/export/org/assets/sync/{{sync_type}}/assets.json?search={{search_filter}}&since={{since}}",
+                "url": "https://{{global_account.api_endpoint}}/api/v1.0/export/org/assets/sync/{{sync_type}}/assets.json?search={{search_filter}}&since={{since}}&services={{services}}",
                 "method": "GET",
                 "headers": {
                     "Authorization": "Bearer {{global_account.api_key}}"
