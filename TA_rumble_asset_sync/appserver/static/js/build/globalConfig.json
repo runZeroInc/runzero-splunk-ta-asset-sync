@@ -76,7 +76,7 @@
                             "encrypted": false,
                             "required": true,
                             "help": "Enter an API endpoint hostname or IP. If you're hosting your own console, enter your console's external IP or hostname.",
-                            "defaultValue": "rumble.console.run",
+                            "defaultValue": "console.rumble.run",
                             "validators": [
                                 {
                                     "type": "regex",
