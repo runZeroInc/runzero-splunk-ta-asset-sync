@@ -1,11 +1,11 @@
 {
   "schemaVersion": "1.0.0",
   "info": {
-    "title": "rumble-asset-sync",
+    "title": "runzero-asset-sync",
     "id": {
       "group": null,
       "name": "TA_runzero_asset_sync",
-      "version": "1.0.15"
+      "version": "3.0.2"
     },
     "author": [
       {

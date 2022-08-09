@@ -1,8 +1,8 @@
 {
     "meta": {
         "name": "TA_runzero_asset_sync",
-        "displayName": "rumble-asset-sync",
-        "version": "1.0.15",
+        "displayName": "runzero-asset-sync",
+        "version": "3.0.2",
         "apiVersion": "3.0.0",
         "restRoot": "TA_runzero_asset_sync",
         "schemaVersion": "0.0.2"
