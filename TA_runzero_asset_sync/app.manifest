@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0.0",
+  "info": {
+    "title": "rumble-asset-sync",
+    "id": {
+      "group": null,
+      "name": "TA_runzero_asset_sync",
+      "version": "1.0.15"
+    },
+    "author": [
+      {
+        "name": "runZero",
+        "email": "support@runzero.com",
+        "company": "runZero, Inc."
+      }
+    ],
+    "releaseDate": null,
+    "description": "This application synchronizes a runZero inventory with Splunk, pulling newly-found or updated hosts as configured.",
+    "classification": {
+      "intendedAudience": null,
+      "categories": [],
+      "developmentStatus": null
+    },
+    "commonInformationModels": null,
+    "license": {
+      "name": null,
+      "text": null,
+      "uri": null
+    },
+    "privacyPolicy": {
+      "name": null,
+      "text": null,
+      "uri": null
+    },
+    "releaseNotes": {
+      "name": null,
+      "text": null,
+      "uri": null
+    }
+  },
+  "dependencies": {
+  },
+  "tasks": [],
+  "inputGroups": {
+  },
+  "incompatibleApps": {
+  },
+  "platformRequirements": {
+    "splunk": {
+      "Enterprise": "*"
+    }
+  }
+}

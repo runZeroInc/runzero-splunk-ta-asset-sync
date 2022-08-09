@@ -1,4 +1,0 @@
-<?xml version="1.0"?>
-<view template="TA_rumble_asset_sync:templates/base.html" type="html" isDashboard="False">
-    <label>Configuration</label>
-</view>

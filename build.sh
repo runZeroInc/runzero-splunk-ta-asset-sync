@@ -1,2 +1,2 @@
-rm -f TA_rumble_asset_sync.tar TA_rumble_asset_sync.tar.gz *.spl
-tar cf TA_rumble_asset_sync.tar TA_rumble_asset_sync && gzip -9 TA_rumble_asset_sync.tar && mv TA_rumble_asset_sync.tar.gz TA_rumble_asset_sync-1.0.15.spl
+rm -f TA_runzero_asset_sync.tar TA_runzero_asset_sync.tar.gz *.spl
+tar cf TA_runzero_asset_sync.tar TA_runzero_asset_sync && gzip -9 TA_runzero_asset_sync.tar && mv TA_runzero_asset_sync.tar.gz TA_runzero_asset_sync-1.0.15.spl
