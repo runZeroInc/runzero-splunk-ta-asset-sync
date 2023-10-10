@@ -1,0 +1,30 @@
+# How to update the runZero app in Splunkbase
+
+1. Install Splunk Enterprise, the Splunk Add-on Builder
+    * Sign up for a Free Trial at https://www.splunk.com/en_us/download/splunk-enterprise.html
+    * Install the Splunk Add-on Builder from https://splunkbase.splunk.com/app/2962
+    
+2. Clone https://github.com/runZeroInc/runzero-splunk-ta-asset-sync and install to local Splunk    
+    * Run `./build.sh` to build an SPL.
+    * Install runZero SPL through "Manage Apps" / `/en-US/manager/launcher/apps/local`
+        * Troubleshooting: do not attempt to import through the Add-on Builder. This will error attempting to read information from the app's manifest / metadata, but leaves artifacts of the app around in a very messy way. I had to completely wipe Splunk to fix this.
+
+3. Open the Splunk app Add-on Builder and validate / package the runZero Asset Sync app.
+    * Again, via "Other apps and add-ons" find the already installed runZero app. Trying to import as a project will cause issues.
+    * Wait for the validation to finish. This could take some time.
+    * If any issues are reported, correct and re-validate.
+        * Troubleshooting: ran into an issue with an install checksum being added by the original install and failing validation. Fix was to remove the checksum from the app.conf in `$SPLUNK_HOME/etc/apps/<APP>/default`. 
+
+4. Download the validated package from the Add-on Builder.
+
+5. In Splunkbase, click "Manage" and then on the version listing click "New Version" which should take you to a prompt to upload the SPL from step 4.
+    * May need invite to be an editor of the existing app in Splunkbase (see HD / account owner).
+
+
+## Troubleshooting
+
+* If you see errors of the format "TA_runzero_asset_sync already exists", but Splunk itself has no record you may need to wipe your Splunk install and start fresh.
+    * `bin/splunk stop` and `rm -rf` the Splunk install
+    * note: the uninstall instructions provided by Splunk weren't sufficient to resolve the error for me, only a wipe and reinstall of Splunk Enterprise did so
+        * https://docs.splunk.com/Documentation/Splunk/7.0.2/Admin/Managingappobjects
+        * uninstalling / reinstalling the AOB may be a lighter fix
