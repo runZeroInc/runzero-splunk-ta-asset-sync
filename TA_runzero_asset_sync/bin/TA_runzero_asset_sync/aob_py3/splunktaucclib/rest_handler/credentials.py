@@ -331,6 +331,11 @@ class RestCredentials:
                     if existed_model["content"][k] == self.PASSWORD:
                         # set existing as raw value
                         existed_model["content"][k] = v
+                    elif existed_model["content"][k] ==  "********":
+                        # set existing as raw value, magic patten is the old one so rewrite this item to fix it.
+                        # see https://community.splunk.com/t5/All-Apps-and-Add-ons/Splunk-Addon-Builder-4-package-resetting-password-conf-entries/m-p/584187/highlight/true
+                        existed_model["content"][k] = v
+                        need_write_magic_pwd = True
                     elif existed_model["content"][k] == "":
                         # mark to delete it
                         clear_password[k] = ""
