@@ -1,4 +1,4 @@
-# Copyright © 2011-2024 Splunk, Inc.
+# Copyright 2011-2015 Splunk, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"): you may
 # not use this file except in compliance with the License. You may obtain
@@ -12,10 +12,13 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import xml.etree.ElementTree as ET
+from __future__ import absolute_import
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
 
-
-class Scheme:
+class Scheme(object):
     """Class representing the metadata for a modular input kind.
 
     A ``Scheme`` specifies a title, description, several options of how Splunk should run modular inputs of this

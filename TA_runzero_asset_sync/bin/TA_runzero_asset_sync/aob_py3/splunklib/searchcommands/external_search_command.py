@@ -1,6 +1,6 @@
 # coding=utf-8
 #
-# Copyright © 2011-2024 Splunk, Inc.
+# Copyright 2011-2015 Splunk, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"): you may
 # not use this file except in compliance with the License. You may obtain
@@ -14,31 +14,34 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 from logging import getLogger
 import os
 import sys
 import traceback
-from . import splunklib_logger as logger
-
+from splunklib import six
 
 if sys.platform == 'win32':
     from signal import signal, CTRL_BREAK_EVENT, SIGBREAK, SIGINT, SIGTERM
     from subprocess import Popen
     import atexit
 
-
+from . import splunklib_logger as logger
 
 # P1 [ ] TODO: Add ExternalSearchCommand class documentation
 
 
-class ExternalSearchCommand:
+class ExternalSearchCommand(object):
+    """
+    """
     def __init__(self, path, argv=None, environ=None):
 
-        if not isinstance(path, (bytes,str)):
-            raise ValueError(f'Expected a string value for path, not {repr(path)}')
+        if not isinstance(path, (bytes, six.text_type)):
+            raise ValueError('Expected a string value for path, not {}'.format(repr(path)))
 
         self._logger = getLogger(self.__class__.__name__)
-        self._path = str(path)
+        self._path = six.text_type(path)
         self._argv = None
         self._environ = None
 
@@ -54,7 +57,7 @@ class ExternalSearchCommand:
     @argv.setter
     def argv(self, value):
         if not (value is None or isinstance(value, (list, tuple))):
-            raise ValueError(f'Expected a list, tuple or value of None for argv, not {repr(value)}')
+            raise ValueError('Expected a list, tuple or value of None for argv, not {}'.format(repr(value)))
         self._argv = value
 
     @property
@@ -64,7 +67,7 @@ class ExternalSearchCommand:
     @environ.setter
     def environ(self, value):
         if not (value is None or isinstance(value, dict)):
-            raise ValueError(f'Expected a dictionary value for environ, not {repr(value)}')
+            raise ValueError('Expected a dictionary value for environ, not {}'.format(repr(value)))
         self._environ = value
 
     @property
@@ -87,7 +90,7 @@ class ExternalSearchCommand:
             self._execute(self._path, self._argv, self._environ)
         except:
             error_type, error, tb = sys.exc_info()
-            message = f'Command execution failed: {str(error)}'
+            message = 'Command execution failed: ' + six.text_type(error)
             self._logger.error(message + '\nTraceback:\n' + ''.join(traceback.format_tb(tb)))
             sys.exit(1)
 
@@ -117,13 +120,13 @@ class ExternalSearchCommand:
             found = ExternalSearchCommand._search_path(path, search_path)
 
             if found is None:
-                raise ValueError(f'Cannot find command on path: {path}')
+                raise ValueError('Cannot find command on path: {}'.format(path))
 
             path = found
-            logger.debug(f'starting command="{path}", arguments={argv}')
+            logger.debug('starting command="%s", arguments=%s', path, argv)
 
-            def terminate(signal_number):
-                sys.exit(f'External search command is terminating on receipt of signal={signal_number}.')
+            def terminate(signal_number, frame):
+                sys.exit('External search command is terminating on receipt of signal={}.'.format(signal_number))
 
             def terminate_child():
                 if p.pid is not None and p.returncode is None:
@@ -203,6 +206,7 @@ class ExternalSearchCommand:
                 os.execvp(path, argv)
             else:
                 os.execvpe(path, argv, environ)
+            return
 
     # endregion
 

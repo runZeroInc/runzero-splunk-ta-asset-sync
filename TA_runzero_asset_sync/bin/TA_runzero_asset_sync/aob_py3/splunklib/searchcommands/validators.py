@@ -1,6 +1,6 @@
 # coding=utf-8
 #
-# Copyright © 2011-2024 Splunk, Inc.
+# Copyright 2011-2015 Splunk, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"): you may
 # not use this file except in compliance with the License. You may obtain
@@ -14,17 +14,20 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+from json.encoder import encode_basestring_ascii as json_encode_string
+from collections import namedtuple
+from splunklib.six.moves import StringIO
+from io import open
 import csv
 import os
 import re
-from io import open, StringIO
-from os import getcwd
-from json.encoder import encode_basestring_ascii as json_encode_string
-from collections import namedtuple
+from splunklib import six
+from splunklib.six.moves import getcwd
 
 
-
-class Validator:
+class Validator(object):
     """ Base class for validators that check and format search command options.
 
     You must inherit from this class and override :code:`Validator.__call__` and
@@ -57,16 +60,14 @@ class Boolean(Validator):
 
     def __call__(self, value):
         if not (value is None or isinstance(value, bool)):
-            value = str(value).lower()
+            value = six.text_type(value).lower()
             if value not in Boolean.truth_values:
-                raise ValueError(f'Unrecognized truth value: {value}')
+                raise ValueError('Unrecognized truth value: {0}'.format(value))
             value = Boolean.truth_values[value]
         return value
 
     def format(self, value):
-        if value is None:
-            return None
-        return 't' if value else 'f'
+        return None if value is None else 't' if value else 'f'
 
 
 class Code(Validator):
@@ -92,11 +93,14 @@ class Code(Validator):
         if value is None:
             return None
         try:
-            return Code.object(compile(value, 'string', self._mode), str(value))
+            return Code.object(compile(value, 'string', self._mode), six.text_type(value))
         except (SyntaxError, TypeError) as error:
-            message = str(error)
+            if six.PY2:
+                message = error.message
+            else:
+                message = str(error)
 
-            raise ValueError(message) from error
+            six.raise_from(ValueError(message), error)
 
     def format(self, value):
         return None if value is None else value.source
@@ -112,9 +116,9 @@ class Fieldname(Validator):
 
     def __call__(self, value):
         if value is not None:
-            value = str(value)
+            value = six.text_type(value)
             if Fieldname.pattern.match(value) is None:
-                raise ValueError(f'Illegal characters in fieldname: {value}')
+                raise ValueError('Illegal characters in fieldname: {}'.format(value))
         return value
 
     def format(self, value):
@@ -135,7 +139,7 @@ class File(Validator):
         if value is None:
             return value
 
-        path = str(value)
+        path = six.text_type(value)
 
         if not os.path.isabs(path):
             path = os.path.join(self.directory, path)
@@ -143,7 +147,8 @@ class File(Validator):
         try:
             value = open(path, self.mode) if self.buffering is None else open(path, self.mode, self.buffering)
         except IOError as error:
-            raise ValueError(f'Cannot open {value} with mode={self.mode} and buffering={self.buffering}: {error}')
+            raise ValueError('Cannot open {0} with mode={1} and buffering={2}: {3}'.format(
+                value, self.mode, self.buffering, error))
 
         return value
 
@@ -161,76 +166,42 @@ class Integer(Validator):
     def __init__(self, minimum=None, maximum=None):
         if minimum is not None and maximum is not None:
             def check_range(value):
-                if not minimum <= value <= maximum:
-                    raise ValueError(f'Expected integer in the range [{minimum},{maximum}], not {value}')
-
+                if not (minimum <= value <= maximum):
+                    raise ValueError('Expected integer in the range [{0},{1}], not {2}'.format(minimum, maximum, value))
+                return
         elif minimum is not None:
             def check_range(value):
                 if value < minimum:
-                    raise ValueError(f'Expected integer in the range [{minimum},+∞], not {value}')
+                    raise ValueError('Expected integer in the range [{0},+∞], not {1}'.format(minimum, value))
+                return
         elif maximum is not None:
             def check_range(value):
                 if value > maximum:
-                    raise ValueError(f'Expected integer in the range [-∞,{maximum}], not {value}')
-
+                    raise ValueError('Expected integer in the range [-∞,{0}], not {1}'.format(maximum, value))
+                return
         else:
             def check_range(value):
                 return
 
         self.check_range = check_range
-
-
-    def __call__(self, value):
-        if value is None:
-            return None
-        try:
-            value = int(value)
-        except ValueError:
-            raise ValueError(f'Expected integer value, not {json_encode_string(value)}')
-
-        self.check_range(value)
-        return value
-
-    def format(self, value):
-        return None if value is None else str(int(value))
-
-
-class Float(Validator):
-    """ Validates float option values.
-
-    """
-    def __init__(self, minimum=None, maximum=None):
-        if minimum is not None and maximum is not None:
-            def check_range(value):
-                if not minimum <= value <= maximum:
-                    raise ValueError(f'Expected float in the range [{minimum},{maximum}], not {value}')
-        elif minimum is not None:
-            def check_range(value):
-                if value < minimum:
-                    raise ValueError(f'Expected float in the range [{minimum},+∞], not {value}')
-        elif maximum is not None:
-            def check_range(value):
-                if value > maximum:
-                    raise ValueError(f'Expected float in the range [-∞,{maximum}], not {value}')
-        else:
-            def check_range(value):
-                return
-        self.check_range = check_range
-
+        return
 
     def __call__(self, value):
         if value is None:
             return None
         try:
-            value = float(value)
+            if six.PY2:
+                value = long(value)
+            else:
+                value = int(value)
         except ValueError:
-            raise ValueError(f'Expected float value, not {json_encode_string(value)}')
+            raise ValueError('Expected integer value, not {}'.format(json_encode_string(value)))
 
         self.check_range(value)
         return value
 
     def format(self, value):
-        return None if value is None else str(float(value))
+        return None if value is None else six.text_type(int(value))
 
 
 class Duration(Validator):
@@ -255,7 +226,7 @@ class Duration(Validator):
             if len(p) == 3:
                 result = 3600 * _unsigned(p[0]) + 60 * _60(p[1]) + _60(p[2])
         except ValueError:
-            raise ValueError(f'Invalid duration value: {value}')
+            raise ValueError('Invalid duration value: {0}'.format(value))
 
         return result
 
@@ -292,7 +263,7 @@ class List(Validator):
 
     def __init__(self, validator=None):
         if not (validator is None or isinstance(validator, Validator)):
-            raise ValueError(f'Expected a Validator instance or None for validator, not {repr(validator)}')
+            raise ValueError('Expected a Validator instance or None for validator, not {}', repr(validator))
         self._validator = validator
 
     def __call__(self, value):
@@ -312,7 +283,7 @@ class List(Validator):
             for index, item in enumerate(value):
                 value[index] = self._validator(item)
         except ValueError as error:
-            raise ValueError(f'Could not convert item {index}: {error}')
+            raise ValueError('Could not convert item {}: {}'.format(index, error))
 
         return value
 
@@ -336,10 +307,10 @@ class Map(Validator):
         if value is None:
             return None
 
-        value = str(value)
+        value = six.text_type(value)
 
         if value not in self.membership:
-            raise ValueError(f'Unrecognized value: {value}')
+            raise ValueError('Unrecognized value: {0}'.format(value))
 
         return self.membership[value]
 
@@ -352,19 +323,19 @@ class Match(Validator):
 
     """
     def __init__(self, name, pattern, flags=0):
-        self.name = str(name)
+        self.name = six.text_type(name)
         self.pattern = re.compile(pattern, flags)
 
     def __call__(self, value):
         if value is None:
             return None
-        value = str(value)
+        value = six.text_type(value)
         if self.pattern.match(value) is None:
-            raise ValueError(f'Expected {self.name}, not {json_encode_string(value)}')
+            raise ValueError('Expected {}, not {}'.format(self.name, json_encode_string(value)))
         return value
 
     def format(self, value):
-        return None if value is None else str(value)
+        return None if value is None else six.text_type(value)
 
 
 class OptionName(Validator):
@@ -375,13 +346,13 @@ class OptionName(Validator):
 
     def __call__(self, value):
         if value is not None:
-            value = str(value)
+            value = six.text_type(value)
             if OptionName.pattern.match(value) is None:
-                raise ValueError(f'Illegal characters in option name: {value}')
+                raise ValueError('Illegal characters in option name: {}'.format(value))
         return value
 
     def format(self, value):
-        return None if value is None else str(value)
+        return None if value is None else six.text_type(value)
 
 
 class RegularExpression(Validator):
@@ -392,9 +363,9 @@ class RegularExpression(Validator):
         if value is None:
             return None
         try:
-            value = re.compile(str(value))
+            value = re.compile(six.text_type(value))
         except re.error as error:
-            raise ValueError(f'{str(error).capitalize()}: {value}')
+            raise ValueError('{}: {}'.format(six.text_type(error).capitalize(), value))
         return value
 
     def format(self, value):
@@ -411,13 +382,13 @@ class Set(Validator):
     def __call__(self, value):
         if value is None:
             return None
-        value = str(value)
+        value = six.text_type(value)
         if value not in self.membership:
-            raise ValueError(f'Unrecognized value: {value}')
+            raise ValueError('Unrecognized value: {}'.format(value))
         return value
 
     def format(self, value):
         return self.__call__(value)
 
 
-__all__ = ['Boolean', 'Code', 'Duration', 'File', 'Integer', 'Float', 'List', 'Map', 'RegularExpression', 'Set']
+__all__ = ['Boolean', 'Code', 'Duration', 'File', 'Integer', 'List', 'Map', 'RegularExpression', 'Set']

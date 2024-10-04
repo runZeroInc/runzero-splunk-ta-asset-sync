@@ -1,6 +1,6 @@
 # coding=utf-8
 #
-# Copyright © 2011-2024 Splunk, Inc.
+# Copyright © 2011-2015 Splunk, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"): you may
 # not use this file except in compliance with the License. You may obtain
@@ -14,22 +14,28 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from __future__ import absolute_import, division, print_function
+
+from io import TextIOWrapper
+from collections import deque, namedtuple
+from splunklib import six
+try:
+    from collections import OrderedDict  # must be python 2.7
+except ImportError:
+    from ..ordereddict import OrderedDict
+from splunklib.six.moves import StringIO
+from itertools import chain
+from splunklib.six.moves import map as imap
+from json import JSONDecoder, JSONEncoder
+from json.encoder import encode_basestring_ascii as json_encode_string
+from splunklib.six.moves import urllib
+
 import csv
 import gzip
 import os
 import re
 import sys
 import warnings
-import urllib.parse
-from io import TextIOWrapper, StringIO
-from collections import deque, namedtuple
-from collections import OrderedDict
-from itertools import chain
-from json import JSONDecoder, JSONEncoder
-from json.encoder import encode_basestring_ascii as json_encode_string
-
-
-
 
 from . import environment
 
@@ -40,19 +46,35 @@ def set_binary_mode(fh):
     """ Helper method to set up binary mode for file handles.
     Emphasis being sys.stdin, sys.stdout, sys.stderr.
     For python3, we want to return .buffer
+    For python2+windows we want to set os.O_BINARY
     """
-    typefile = TextIOWrapper
+    typefile = TextIOWrapper if sys.version_info >= (3, 0) else file
     # check for file handle
     if not isinstance(fh, typefile):
         return fh
 
-    # check for buffer
-    if hasattr(fh, 'buffer'):
+    # check for python3 and buffer
+    if sys.version_info >= (3, 0) and hasattr(fh, 'buffer'):
         return fh.buffer
+    # check for python3
+    elif sys.version_info >= (3, 0):
+        pass
+    # check for windows python2. SPL-175233 -- python3 stdout is already binary
+    elif sys.platform == 'win32':
+        # Work around the fact that on Windows '\n' is mapped to '\r\n'. The typical solution is to simply open files in
+        # binary mode, but stdout is already open, thus this hack. 'CPython' and 'PyPy' work differently. We assume that
+        # all other Python implementations are compatible with 'CPython'. This might or might not be a valid assumption.
+        from platform import python_implementation
+        implementation = python_implementation()
+        if implementation == 'PyPy':
+            return os.fdopen(fh.fileno(), 'wb', 0)
+        else:
+            import msvcrt
+            msvcrt.setmode(fh.fileno(), os.O_BINARY)
     return fh
 
 
-class CommandLineParser:
+class CommandLineParser(object):
     r""" Parses the arguments to a search command.
 
     A search command line is described by the following syntax.
@@ -125,7 +147,7 @@ class CommandLineParser:
         command_args = cls._arguments_re.match(argv)
 
         if command_args is None:
-            raise SyntaxError(f'Syntax error: {argv}')
+            raise SyntaxError('Syntax error: {}'.format(argv))
 
         # Parse options
 
@@ -133,7 +155,7 @@ class CommandLineParser:
             name, value = option.group('name'), option.group('value')
             if name not in command.options:
                 raise ValueError(
-                    f'Unrecognized {command.name} command option: {name}={json_encode_string(value)}')
+                    'Unrecognized {} command option: {}={}'.format(command.name, name, json_encode_string(value)))
             command.options[name].value = cls.unquote(value)
 
         missing = command.options.get_missing()
@@ -141,8 +163,8 @@ class CommandLineParser:
         if missing is not None:
             if len(missing) > 1:
                 raise ValueError(
-                    f'Values for these {command.name} command options are required: {", ".join(missing)}')
-            raise ValueError(f'A value for {command.name} command option {missing[0]} is required')
+                    'Values for these {} command options are required: {}'.format(command.name, ', '.join(missing)))
+            raise ValueError('A value for {} command option {} is required'.format(command.name, missing[0]))
 
         # Parse field names
 
@@ -258,10 +280,10 @@ class ConfigurationSettingsType(type):
             if isinstance(specification.type, type):
                 type_names = specification.type.__name__
             else:
-                type_names = ', '.join(map(lambda t: t.__name__, specification.type))
-            raise ValueError(f'Expected {type_names} value, not {name}={repr(value)}')
+                type_names = ', '.join(imap(lambda t: t.__name__, specification.type))
+            raise ValueError('Expected {} value, not {}={}'.format(type_names, name, repr(value)))
         if specification.constraint and not specification.constraint(value):
-            raise ValueError(f'Illegal value: {name}={ repr(value)}')
+            raise ValueError('Illegal value: {}={}'.format(name, repr(value)))
         return value
 
     specification = namedtuple(
@@ -295,7 +317,7 @@ class ConfigurationSettingsType(type):
             supporting_protocols=[1]),
         'maxinputs': specification(
             type=int,
-            constraint=lambda value: 0 <= value <= sys.maxsize,
+            constraint=lambda value: 0 <= value <= six.MAXSIZE,
             supporting_protocols=[2]),
         'overrides_timeorder': specification(
             type=bool,
@@ -322,11 +344,11 @@ class ConfigurationSettingsType(type):
             constraint=None,
             supporting_protocols=[1]),
         'streaming_preop': specification(
-            type=(bytes, str),
+            type=(bytes, six.text_type),
             constraint=None,
             supporting_protocols=[1, 2]),
         'type': specification(
-            type=(bytes, str),
+            type=(bytes, six.text_type),
             constraint=lambda value: value in ('events', 'reporting', 'streaming'),
             supporting_protocols=[2])}
 
@@ -349,7 +371,7 @@ class InputHeader(dict):
     """
 
     def __str__(self):
-        return '\n'.join([name + ':' + value for name, value in self.items()])
+        return '\n'.join([name + ':' + value for name, value in six.iteritems(self)])
 
     def read(self, ifile):
         """ Reads an input header from an input file.
@@ -397,7 +419,7 @@ class MetadataDecoder(JSONDecoder):
         while len(stack):
             instance, member_name, dictionary = stack.popleft()
 
-            for name, value in dictionary.items():
+            for name, value in six.iteritems(dictionary):
                 if isinstance(value, dict):
                     stack.append((dictionary, name, value))
 
@@ -418,13 +440,10 @@ class MetadataEncoder(JSONEncoder):
     _separators = (',', ':')
 
 
-class ObjectView:
+class ObjectView(object):
 
     def __init__(self, dictionary):
         self.__dict__ = dictionary
-
-    def update(self, obj):
-        self.__dict__.update(obj.__dict__)
 
     def __repr__(self):
         return repr(self.__dict__)
@@ -433,7 +452,7 @@ class ObjectView:
         return str(self.__dict__)
 
 
-class Recorder:
+class Recorder(object):
 
     def __init__(self, path, f):
         self._recording = gzip.open(path + '.gz', 'wb')
@@ -471,7 +490,7 @@ class Recorder:
         self._recording.flush()
 
 
-class RecordWriter:
+class RecordWriter(object):
 
     def __init__(self, ofile, maxresultrows=None):
         self._maxresultrows = 50000 if maxresultrows is None else maxresultrows
@@ -497,7 +516,7 @@ class RecordWriter:
 
     @is_flushed.setter
     def is_flushed(self, value):
-        self._flushed = bool(value)
+        self._flushed = True if value else False
 
     @property
     def ofile(self):
@@ -577,7 +596,7 @@ class RecordWriter:
         if fieldnames is None:
             self._fieldnames = fieldnames = list(record.keys())
             self._fieldnames.extend([i for i in self.custom_fields if i not in self._fieldnames])
-            value_list = map(lambda fn: (str(fn), str('__mv_') + str(fn)), fieldnames)
+            value_list = imap(lambda fn: (str(fn), str('__mv_') + str(fn)), fieldnames)
             self._writerow(list(chain.from_iterable(value_list)))
 
         get_value = record.get
@@ -616,9 +635,9 @@ class RecordWriter:
 
                             if value_t is bool:
                                 value = str(value.real)
-                            elif value_t is str:
+                            elif value_t is six.text_type:
                                 value = value
-                            elif isinstance(value, int) or value_t is float or value_t is complex:
+                            elif isinstance(value, six.integer_types) or value_t is float or value_t is complex:
                                 value = str(value)
                             elif issubclass(value_t, (dict, list, tuple)):
                                 value = str(''.join(RecordWriter._iterencode_json(value, 0)))
@@ -642,11 +661,13 @@ class RecordWriter:
                 values += (value, None)
                 continue
 
-            if value_t is str:
+            if value_t is six.text_type:
+                if six.PY2:
+                    value = value.encode('utf-8')
                 values += (value, None)
                 continue
 
-            if isinstance(value, int) or value_t is float or value_t is complex:
+            if isinstance(value, six.integer_types) or value_t is float or value_t is complex:
                 values += (str(value), None)
                 continue
 
@@ -781,15 +802,16 @@ class RecordWriterV2(RecordWriter):
         if len(inspector) == 0:
             inspector = None
 
-        metadata = [('inspector', inspector), ('finished', finished)]
+        metadata = [item for item in (('inspector', inspector), ('finished', finished))]
         self._write_chunk(metadata, self._buffer.getvalue())
         self._clear()
 
     def write_metadata(self, configuration):
         self._ensure_validity()
 
-        metadata = chain(configuration.items(), (('inspector', self._inspector if self._inspector else None),))
+        metadata = chain(six.iteritems(configuration), (('inspector', self._inspector if self._inspector else None),))
         self._write_chunk(metadata, '')
+        self.write('\n')
         self._clear()
 
     def write_metric(self, name, value):
@@ -797,13 +819,13 @@ class RecordWriterV2(RecordWriter):
         self._inspector['metric.' + name] = value
 
     def _clear(self):
-        super()._clear()
+        super(RecordWriterV2, self)._clear()
         self._fieldnames = None
 
     def _write_chunk(self, metadata, body):
 
         if metadata:
-            metadata = str(''.join(self._iterencode_json(dict((n, v) for n, v in metadata if v is not None), 0)))
+            metadata = str(''.join(self._iterencode_json(dict([(n, v) for n, v in metadata if v is not None]), 0)))
             if sys.version_info >= (3, 0):
                 metadata = metadata.encode('utf-8')
             metadata_length = len(metadata)
@@ -817,7 +839,7 @@ class RecordWriterV2(RecordWriter):
         if not (metadata_length > 0 or body_length > 0):
             return
 
-        start_line = f'chunked 1.0,{metadata_length},{body_length}\n'
+        start_line = 'chunked 1.0,%s,%s\n' % (metadata_length, body_length)
         self.write(start_line)
         self.write(metadata)
         self.write(body)

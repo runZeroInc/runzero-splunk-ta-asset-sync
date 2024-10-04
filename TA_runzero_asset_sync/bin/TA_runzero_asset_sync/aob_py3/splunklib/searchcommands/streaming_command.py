@@ -1,6 +1,6 @@
 # coding=utf-8
 #
-# Copyright © 2011-2024 Splunk, Inc.
+# Copyright 2011-2015 Splunk, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"): you may
 # not use this file except in compliance with the License. You may obtain
@@ -14,6 +14,10 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+from splunklib import six
+from splunklib.six.moves import map as imap, filter as ifilter
 
 from .decorators import ConfigurationSetting
 from .search_command import SearchCommand
@@ -167,6 +171,7 @@ class StreamingCommand(SearchCommand):
             """
             if command.stream == StreamingCommand.stream:
                 raise AttributeError('No StreamingCommand.stream override')
+            return
 
         # TODO: Stop looking like a dictionary because we don't obey the semantics
         # N.B.: Does not use Python 2 dict copy semantics
@@ -175,14 +180,16 @@ class StreamingCommand(SearchCommand):
             version = self.command.protocol_version
             if version == 1:
                 if self.required_fields is None:
-                    iteritems = [name_value for name_value in iteritems if name_value[0] != 'clear_required_fields']
+                    iteritems = ifilter(lambda name_value: name_value[0] != 'clear_required_fields', iteritems)
             else:
-                iteritems = [name_value2 for name_value2 in iteritems if name_value2[0] != 'distributed']
+                iteritems = ifilter(lambda name_value2: name_value2[0] != 'distributed', iteritems)
                 if not self.distributed:
-                    iteritems = [(name_value1[0], 'stateful') if name_value1[0] == 'type' else (name_value1[0], name_value1[1]) for name_value1 in iteritems]
+                    iteritems = imap(
+                        lambda name_value1: (name_value1[0], 'stateful') if name_value1[0] == 'type' else (name_value1[0], name_value1[1]), iteritems)
             return iteritems
 
         # N.B.: Does not use Python 3 dict view semantics
-        items = iteritems
+        if not six.PY2:
+            items = iteritems
 
         # endregion
