@@ -1,16 +1,16 @@
 {
     "meta": {
         "name": "TA_runzero_asset_sync",
-        "displayName": "runzero-asset-sync",
-        "version": "3.0.2",
-        "apiVersion": "3.0.0",
+        "displayName": "runZero Asset Sync",
+        "version": "3.1.0",
         "restRoot": "TA_runzero_asset_sync",
-        "schemaVersion": "0.0.2"
+        "_uccVersion": "5.39.0",
+        "schemaVersion": "0.0.3"
     },
     "pages": {
         "configuration": {
             "title": "Configuration",
-            "description": "Configure your account, proxy, and log level.",
+            "description": "Set up your add-on",
             "tabs": [
                 {
                     "name": "account",
@@ -73,7 +73,6 @@
                             "field": "api_endpoint",
                             "label": "API Endpoint Hostname or IP",
                             "type": "text",
-                            "encrypted": false,
                             "required": true,
                             "help": "Enter an API endpoint hostname or IP. If you're hosting your own console, enter your console's external IP or hostname.",
                             "defaultValue": "console.runzero.com",
@@ -88,47 +87,54 @@
                     ]
                 },
                 {
-                    "options": {
-                        "saveValidator": "function(formData) { if(!formData.proxy_enabled || formData.proxy_enabled === '0') {return true; } if(!formData.proxy_url) { return 'Proxy Host can not be empty'; } if(!formData.proxy_port) { return 'Proxy Port can not be empty'; } return true; }"
-                    },
+                    "name": "proxy",
+                    "title": "Proxy",
                     "entity": [
                         {
-                            "type": "checkbox",
+                            "field": "proxy_enabled",
                             "label": "Enable",
-                            "field": "proxy_enabled"
+                            "type": "checkbox"
                         },
                         {
-                            "type": "singleSelect",
+                            "field": "proxy_type",
                             "label": "Proxy Type",
+                            "type": "singleSelect",
                             "options": {
+                                "disableSearch": true,
                                 "autoCompleteFields": [
                                     {
-                                        "value": "http",
-                                        "label": "http"
+                                        "label": "http",
+                                        "value": "http"
+                                    },
+                                    {
+                                        "label": "socks4",
+                                        "value": "socks4"
+                                    },
+                                    {
+                                        "label": "socks5",
+                                        "value": "socks5"
                                     }
-                                ],
-                                "disableSearch": true
+                                ]
                             },
-                            "field": "proxy_type",
                             "defaultValue": "http"
                         },
                         {
-                            "type": "text",
-                            "label": "Host",
                             "field": "proxy_url",
+                            "label": "Host",
+                            "type": "text",
                             "validators": [
                                 {
                                     "type": "string",
+                                    "minLength": 0,
                                     "maxLength": 4096,
-                                    "errorMsg": "Max host length is 4096",
-                                    "minLength": 0
+                                    "errorMsg": "Max host length is 4096"
                                 }
                             ]
                         },
                         {
-                            "type": "text",
-                            "label": "Port",
                             "field": "proxy_port",
+                            "label": "Port",
+                            "type": "text",
                             "validators": [
                                 {
                                     "type": "number",
@@ -140,40 +146,41 @@
                             ]
                         },
                         {
-                            "type": "text",
-                            "label": "Username",
                             "field": "proxy_username",
-                            "validators": [
-                                {
-                                    "type": "string",
-                                    "maxLength": 50,
-                                    "errorMsg": "Max length of username is 50",
-                                    "minLength": 0
-                                }
-                            ]
-                        },
-                        {
+                            "label": "Username",
                             "type": "text",
-                            "label": "Password",
-                            "encrypted": true,
-                            "field": "proxy_password",
                             "validators": [
                                 {
                                     "type": "string",
-                                    "maxLength": 8192,
-                                    "errorMsg": "Max length of password is 8192",
-                                    "minLength": 0
+                                    "minLength": 0,
+                                    "maxLength": 50,
+                                    "errorMsg": "Max length of username is 50"
                                 }
                             ]
                         },
                         {
-                            "type": "checkbox",
+                            "field": "proxy_password",
+                            "label": "Password",
+                            "type": "text",
+                            "encrypted": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of password is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "proxy_rdns",
                             "label": "Remote DNS resolution",
-                            "field": "proxy_rdns"
+                            "type": "checkbox"
                         }
                     ],
-                    "name": "proxy",
-                    "title": "Proxy"
+                    "options": {
+                        "saveValidator": "function(formData) { if(!formData.proxy_enabled || formData.proxy_enabled === '0') {return true; } if(!formData.proxy_url) { return 'Proxy Host can not be empty'; } if(!formData.proxy_port) { return 'Proxy Port can not be empty'; } return true; }"
+                    }
                 },
                 {
                     "name": "logging",
@@ -224,16 +231,12 @@
                         "label": "Name"
                     },
                     {
-                        "field": "interval",
-                        "label": "Interval"
-                    },
-                    {
                         "field": "index",
                         "label": "Index"
                     },
                     {
-                        "field": "services",
-                        "label": "Import Services"
+                        "field": "sync_type",
+                        "label": "Sync Type"
                     },
                     {
                         "field": "disabled",
@@ -244,10 +247,6 @@
                     {
                         "field": "name",
                         "label": "Name"
-                    },
-                    {
-                        "field": "interval",
-                        "label": "Interval"
                     },
                     {
                         "field": "index",
@@ -266,16 +265,20 @@
                         "label": "Search Filter"
                     },
                     {
-                        "field": "since",
-                        "label": "Since"
+                        "field": "import_services",
+                        "label": "Import Services"
+                    },
+                    {
+                        "field": "interval",
+                        "label": "Interval"
+                    },
+                    {
+                        "field": "batch_size",
+                        "label": "Batch Size"
                     },
                     {
                         "field": "global_account",
                         "label": "Global Account"
-                    },
-                    {
-                        "field": "services",
-                        "label": "Import Services"
                     }
                 ],
                 "actions": [
@@ -311,18 +314,14 @@
                             ]
                         },
                         {
-                            "field": "interval",
-                            "label": "Interval",
-                            "type": "text",
+                            "field": "global_account",
+                            "label": "Global Account",
+                            "help": "",
                             "required": true,
-                            "help": "Time interval of input in seconds.",
-                            "validators": [
-                                {
-                                    "type": "regex",
-                                    "pattern": "^\\-[1-9]\\d*$|^\\d*$",
-                                    "errorMsg": "Interval must be an integer."
-                                }
-                            ]
+                            "type": "singleSelect",
+                            "options": {
+                                "referenceName": "account"
+                            }
                         },
                         {
                             "field": "index",
@@ -331,8 +330,8 @@
                             "defaultValue": "default",
                             "options": {
                                 "endpointUrl": "data/indexes",
-                                "createSearchChoice": true,
-                                "denyList": "^_.*$"
+                                "denyList": "^_.*$",
+                                "createSearchChoice": true
                             },
                             "required": true,
                             "validators": [
@@ -343,16 +342,6 @@
                                     "errorMsg": "Length of index name should be between 1 and 80."
                                 }
                             ]
-                        },
-                        {
-                            "field": "global_account",
-                            "label": "Global Account",
-                            "help": "",
-                            "required": true,
-                            "type": "singleSelect",
-                            "options": {
-                                "referenceName": "account"
-                            }
                         },
                         {
                             "field": "sync_type",
@@ -375,43 +364,9 @@
                             }
                         },
                         {
-                            "field": "search_filter",
-                            "label": "Search Filter",
-                            "help": "The search filter can be used to limit the types of assets returned by the asset sync. See the runZero Query Syntax documentation for additional details.",
-                            "required": false,
-                            "type": "text",
-                            "validators": [
-                                {
-                                    "type": "string",
-                                    "minLength": 0,
-                                    "maxLength": 8192,
-                                    "errorMsg": "Max length of text input is 8192"
-                                }
-                            ]
-                        },
-                        {
-                            "field": "since",
-                            "label": "Since",
-                            "help": "Initial value of the checkpoint variable",
-                            "required": true,
-                            "type": "text",
-                            "defaultValue": "0",
-                            "validators": [
-                                {
-                                    "type": "string",
-                                    "minLength": 0,
-                                    "maxLength": 8192,
-                                    "errorMsg": "Max length of text input is 8192"
-                                }
-                            ],
-                            "options": {
-                                "placeholder": "Initial value for the checkpoint variable (use 0)"
-                            }
-                        },
-                        {
-                            "field": "services",
+                            "field": "import_services",
                             "label": "Import Services",
-                            "help": "Enable or disable importing your services",
+                            "help": "Enable or disable importing your service",
                             "required": false,
                             "type": "singleSelect",
                             "defaultValue": "false",
@@ -430,25 +385,50 @@
                             }
                         },
                         {
-                            "field": "builtin_system_checkpoint_storage_type",
-                            "label": "Checkpoint type",
-                            "help": "",
+                            "field": "search_filter",
+                            "label": "Search Filter",
+                            "help": "The search filter can be used to limit the types of assets returned by the asset sync. See the runZero Query Syntax documentation for additional details.",
                             "required": false,
-                            "type": "singleSelect",
-                            "defaultValue": "auto",
-                            "options": {
-                                "disableSearch": true,
-                                "autoCompleteFields": [
-                                    {
-                                        "value": "auto",
-                                        "label": "Auto"
-                                    },
-                                    {
-                                        "value": "file",
-                                        "label": "File"
-                                    }
-                                ]
-                            }
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "interval",
+                            "label": "Interval",
+                            "type": "text",
+                            "required": true,
+                            "defaultValue": "3600",
+                            "help": "How often to fetch assets",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\-[1-9]\\d*$|^\\d*$",
+                                    "errorMsg": "Interval must be an integer."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "batch_size",
+                            "label": "Batch Size",
+                            "help": "The number of assets to fetch during each request",
+                            "required": true,
+                            "type": "text",
+                            "defaultValue": "1000",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
                         }
                     ]
                 }

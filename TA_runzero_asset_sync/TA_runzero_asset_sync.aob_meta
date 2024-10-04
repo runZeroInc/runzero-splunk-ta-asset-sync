@@ -1,1 +1,234 @@
-{"validation": {"validators": ["best_practice_validation", "data_model_mapping_validation", "field_extract_validation", "app_cert_validation"], "status": "job_started", "validation_id": "v_1726074898_64"}}
+{
+  "basic_builder": {
+    "appname": "TA_runzero_asset_sync",
+    "friendly_name": "runZero Asset Sync",
+    "version": "3.1.0",
+    "author": "runZero",
+    "description": "This application synchronizes a runZero inventory with Splunk, pulling newly-found or updated hosts as configured.",
+    "theme": "#65A637",
+    "large_icon": "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",
+    "small_icon": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAHYYAAB2GAV2iE4EAAAUUSURBVFhHvZd7TNNXFMe/LZS+5CGgtFLFsEcmbv8sIQuZuskCYlAJM1PjHmHOP4YmSyQRo+LIMmXORM2ygWYKDHFbZIbFYdwcy2DGRBOTsbnNzZGhmQillSrQ9tcHbXfu/d2WFgqhddsnub2/e+7tPed3zrmPnyJAIEas94YxOGSBecgqagsGLVa5Fu0BswV+vw9P5S3B7qrtKFtdLP4dSVQDznzZgSvXfsTdgUHcHTSjf8DMn/22e9SrpH9RSUigx/CaijKBmkpqyjXD6/XCNzyM59asRndHG5eFE2HAe0frsadqJ6DSAuokPrmCJlPSZAmkRElFoVCI0bEhkVd2vb0LB2t3C4lMyIANr1fii09OQ51lIEXxKZkJpsZl7qdaEhIZ7qfmz9pIeSu0RmPcypkCn88HD7nc5XLD7fGIHhnuOZUOHd98JyQy3AMKVTqSMtK5m8Nhk/r9fj6xj2r6oeIDCSPrANWgOi0TpmwjchZmw+5w4vpvv0OjVsuTEZLtPhob67Hl5Q1CQgZ0dl0KFBWVQTsvU4hkJMp0eD3QGAzINlJZYICJ10beNlE7JCdZtNxQJGVAQy8W7GMGNDc1oGLzS7zNOXrsZAC6rIDW+FiokDsC3ZevMOc8FIAmgIS0AJSp9JzMci3Q0HhK9MooA8yNk42n+C0veEY04udkazO6ui+gt/cnOJ0WHtLKLa+KXhkKevSk80xKonh445VNeH5ZAR7NXQytViOkkURm3f/AA1ohv1psOPfHbVwfskFxpP5EoKq6BtqUFDGEkoV2P0myQqOZyOCZMNud6B91iGLn9Z2w9p0RB7xUY5xWCltpLCk9XuwrL3w4A9a3daL96i9yFIMTs32E1Wy7Dj6HZFSCkCcOlq6ILwQ2yQ1F9Qdo77kJpOipzAHm6AA9beEs1sxwtYo2nkQgUZwV4crDiMuAjNrjpITOClammXi2xGxA+Zlv5ROQlelgWwBb3izm3nHA7eUuh+QCHHQWUM5gzIkRlyf2HFDsOAykksvD35wpoclCihMToU7Vw0ShMVGIWFkY9mxifcl6ZFHYYjKg7/4oHtnfKMc9CClflmvCp+sLkUYhSWHHeAzEFAKnh950cszJgMr8PCwir8SqnBGTAdOd1E4Wgihc/P4HtHx+FnVHPsL2nTUoXLcJX33dKXpl4loFs6XkhWJUVLyJvfv2o+F4E7o6zsNK17Nw/lMDoJsL9dw0aFNToE2mxFVryYuRKqc1QKWijSQO+m7/je7LV3Hg8Id8VbB7ZAhaIelkUDjUy47pSdAy6u27xR8HzEO8ni0r123EyuVFqKmtgzYtVUiZLaTHa0dpcaGQyLBr7hQb2O1oSV4+denp1mMU0tnB3lCZnk7LOllIZFyShGdXldK70fYchjKTBvPNYxLMCHUWKdfPF5L4GR+nVTLyAJcunBWSCZQvri0h82yyi/5l/DSnZLfDa7Xir1s3IvNBoNTrdNjzbh2/s7Mb8MMyOjZGX1A2SJQ7brMZ5WVr6OXGkLt4kRgRCTfpQE01mk63wD1EWzDdXJnVksMB9xhdIhyjfOBsOfTOXpy/eA43/+zhittbPxY90ZnybXisqRXXen6mb7pxLDBkwTB/HnZs28r7btBVaumhU3TBpbM/iNOFExuLsfXpJ4QgNqYYMBPcgPdb5IsH+xjx01/JgPrNJdiWv1SMio1pN6JoMH3QafCkIQNFj+fgNTqE3lpVgBU5sS3VCYB/ANZxcjMYKgZFAAAAAElFTkSuQmCC",
+    "visible": false,
+    "tab_version": "4.3.0",
+    "tab_build_no": "0",
+    "build_no": 1
+  },
+  "data_input_builder": {
+    "datainputs": [
+      {
+        "index": "default",
+        "sourcetype": "assets",
+        "interval": "3600",
+        "use_external_validation": true,
+        "streaming_mode_xml": true,
+        "name": "assets",
+        "title": "Assets",
+        "description": "",
+        "type": "customized",
+        "parameters": [
+          {
+            "required": true,
+            "name": "sync_type",
+            "label": "Sync Type",
+            "default_value": "created",
+            "help_string": "The sync type determines whether to pull only new assets or all updated assets since the last sync.",
+            "possible_values": [
+              {
+                "value": "created",
+                "label": "New Assets Only"
+              },
+              {
+                "value": "updated",
+                "label": "All Updated Assets"
+              }
+            ],
+            "type": "radiogroup",
+            "format_type": "radiogroup",
+            "value": "created"
+          },
+          {
+            "required": false,
+            "name": "search_filter",
+            "label": "Search Filter",
+            "default_value": "",
+            "placeholder": "",
+            "help_string": "The search filter can be used to limit the types of assets returned by the asset sync. See the runZero Query Syntax documentation for additional details.",
+            "type": "text",
+            "format_type": "text",
+            "value": ""
+          },
+          {
+            "required": false,
+            "name": "import_services",
+            "label": "Import Services",
+            "default_value": "false",
+            "placeholder": "",
+            "help_string": "Enable or disable importing your service",
+            "possible_values": [
+              {
+                "value": "true",
+                "label": "Enabled"
+              },
+              {
+                "value": "false",
+                "label": "Disabled"
+              }
+            ],
+            "type": "dropdownlist",
+            "format_type": "dropdownlist",
+            "value": "false"
+          },
+          {
+            "required": true,
+            "name": "batch_size",
+            "label": "Batch Size",
+            "default_value": "1000",
+            "placeholder": "",
+            "help_string": "The number of assets to fetch during each request",
+            "type": "text",
+            "format_type": "text",
+            "value": "1000"
+          },
+          {
+            "name": "global_account",
+            "label": "Global Account",
+            "help_string": "",
+            "required": true,
+            "possible_values": [],
+            "format_type": "global_account",
+            "default_value": "",
+            "placeholder": "",
+            "type": "global_account",
+            "value": "account0"
+          }
+        ],
+        "data_inputs_options": [
+          {
+            "type": "customized_var",
+            "name": "sync_type",
+            "title": "Sync Type",
+            "description": "The sync type determines whether to pull only new assets or all updated assets since the last sync.",
+            "required_on_edit": false,
+            "required_on_create": true,
+            "possible_values": [
+              {
+                "value": "created",
+                "label": "New Assets Only"
+              },
+              {
+                "value": "updated",
+                "label": "All Updated Assets"
+              }
+            ],
+            "format_type": "radiogroup",
+            "default_value": "created"
+          },
+          {
+            "type": "customized_var",
+            "name": "search_filter",
+            "title": "Search Filter",
+            "description": "The search filter can be used to limit the types of assets returned by the asset sync. See the runZero Query Syntax documentation for additional details.",
+            "required_on_edit": false,
+            "required_on_create": false,
+            "format_type": "text",
+            "default_value": "",
+            "placeholder": ""
+          },
+          {
+            "type": "customized_var",
+            "name": "import_services",
+            "title": "Import Services",
+            "description": "Enable or disable importing your service",
+            "required_on_edit": false,
+            "required_on_create": false,
+            "possible_values": [
+              {
+                "value": "true",
+                "label": "Enabled"
+              },
+              {
+                "value": "false",
+                "label": "Disabled"
+              }
+            ],
+            "format_type": "dropdownlist",
+            "default_value": "false",
+            "placeholder": ""
+          },
+          {
+            "type": "customized_var",
+            "name": "batch_size",
+            "title": "Batch Size",
+            "description": "The number of assets to fetch during each request",
+            "required_on_edit": false,
+            "required_on_create": true,
+            "format_type": "text",
+            "default_value": "1000",
+            "placeholder": ""
+          }
+        ],
+        "code": "\n# encoding = utf-8\n\nimport os\nimport sys\nimport time\nimport datetime\nimport json\n\n'''\n    IMPORTANT\n    Edit only the validate_input and collect_events functions.\n    Do not edit any other part in this file.\n    This file is generated only once when creating the modular input.\n'''\n\nCHECKPOINT_KEY=\"since\"\n\n\ndef validate_input(helper, definition):\n    \"\"\"Implement your own validation logic to validate the input stanza configurations\"\"\"\n    # This example accesses the modular input variable\n    # sync_type = definition.parameters.get('sync_type', None)\n    # search_filter = definition.parameters.get('search_filter', None)\n    # services = definition.parameters.get('services', None)\n    pass\n\ndef collect_events(helper, ew):\n    # (log_level can be \"debug\", \"info\", \"warning\", \"error\" or \"critical\", case insensitive)\n    # helper.set_log_level(\"debug\")\n    \n    # Get options\n    opt_sync_type = helper.get_arg('sync_type')\n    opt_search_filter = helper.get_arg('search_filter')\n    if opt_search_filter == None:\n        opt_search_filter = \"\"\n    opt_services = helper.get_arg('services')\n    if opt_services == None:\n        opt_services = \"\"\n    opt_page_size = helper.get_arg('batch_size')\n    if opt_page_size == None:\n        opt_page_size = \"\"\n\n    # Get account credentials\n    # NOTE: When testing inside the add-on builder UI, only username/password are\n    # supported.  Add-on builder will overwrite the api_endpoint/api_key configuration\n    # in the source files, so make sure you manually correct that after saving!!!\n    global_account = helper.get_arg('global_account')\n    if 'api_endpoint' in global_account:\n        api_endpoint = global_account['api_endpoint']\n    elif 'username' in global_account:\n        # Work around when testing inside add-on builder\n        # add-on builder doesn't support custom global account parameters\n        api_endpoint = global_account['username']\n    if 'api_key' in global_account:\n        api_key = global_account['api_key']\n    elif 'password' in global_account:\n        # Work around when testing inside add-on builder\n        # add-on builder doesn't support custom global account parameters\n        api_key = global_account['password']\n\n    try:\n        opt_since = int(float(helper.get_check_point(CHECKPOINT_KEY)))\n    except (ValueError, TypeError):\n        opt_since = 0\n\n    use_proxy = False\n    if len(helper.get_proxy()) > 0:\n        use_proxy = True\n\n    # Page through API\n    page = 1\n    headers = {\"Authorization\": f\"Bearer {api_key}\"}\n    checkpoint_ts = opt_since\n\n    while True:\n        url = f\"https://{api_endpoint}/api/v1.0/export/org/assets/sync/{opt_sync_type}/assets.json?search={opt_search_filter}&since={opt_since}&services={opt_services}&page={page}&page_size={opt_page_size}\"\n        response = helper.send_http_request(url, \"GET\", parameters=None, payload=None,\n                                            headers=headers, cookies=None, verify=True, cert=None,\n                                            timeout=None, use_proxy=use_proxy)\n        # check the response status, if the status is not sucessful, raise requests.HTTPError\n        response.raise_for_status()\n\n        r_json = response.json()\n        if r_json == None or r_json['assets'] == None:\n            helper.log_error(\"assets array missing\")\n            raise(\"assets array missing\")\n        assets = r_json['assets']\n\n        if len(assets) == 0:\n            break\n\n        for asset in assets:\n            try:\n                updated_at = float(asset['updated_at'])\n            except (ValueError, TypeError):\n                updated_at = time.time()\n            try:\n                created_at = float(asset['created_at'])\n            except (ValueError, TypeError):\n                created_at = 0\n\n            if opt_sync_type == \"created\":\n                if created_at > checkpoint_ts:\n                    checkpoint_ts = created_at\n            else:\n                if updated_at > checkpoint_ts:\n                    checkpoint_ts = updated_at\n\n            # TODO: Splunk isn't respecting the time sent through the event.  But why?\n            # We're using TIMESTAMP_FIELDS=updated_at in props.conf to work around.\n\n            # Write the event to Splunk index\n            event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(asset), time=updated_at, done=True, unbroken=True)\n            ew.write_event(event)\n\n        # Older versions of runZero don't support the page parameter on this API.\n        # If the response isn't paged, finish now to avoid an infinite loop\n        if \"page\" not in r_json or r_json[\"page\"] != page:\n            helper.log_warning(\"Batch fetching is not supported.  Please upgrade your runZero console\")\n            break\n\n        if \"page_size\" in r_json and len(assets) < r_json[\"page_size\"]:\n            break\n\n        page = page + 1\n\n    # Save checkpoint so we'll only refresh newly created/updated assets on next iteration\n    if checkpoint_ts > opt_since:\n        helper.save_check_point(CHECKPOINT_KEY, int(checkpoint_ts))\n",
+        "customized_options": [
+          {
+            "name": "sync_type",
+            "value": "updated"
+          },
+          {
+            "name": "search_filter",
+            "value": ""
+          },
+          {
+            "name": "import_services",
+            "value": "false"
+          },
+          {
+            "name": "batch_size",
+            "value": "10"
+          },
+          {
+            "name": "global_account",
+            "value": "account0"
+          }
+        ],
+        "uuid": "2c57428472644262a176fea1b13dd431"
+      }
+    ]
+  },
+  "field_extraction_builder": {
+    "assets": {
+      "is_parsed": true,
+      "data_format": "json"
+    }
+  },
+  "global_settings_builder": {
+    "global_settings": {
+      "proxy_settings": {
+        "proxy_type": "http"
+      },
+      "log_settings": {
+        "log_level": "DEBUG"
+      },
+      "customized_settings": []
+    }
+  },
+  "sourcetype_builder": {
+    "assets": {
+      "metadata": {
+        "event_count": 0,
+        "data_input_name": "assets",
+        "extractions_count": 0,
+        "cims_count": 0
+      }
+    }
+  },
+  "validation": {
+    "validators": [
+      "best_practice_validation",
+      "data_model_mapping_validation",
+      "field_extract_validation",
+      "app_cert_validation"
+    ],
+    "status": "job_started",
+    "validation_id": "v_1728014647_94"
+  }
+}

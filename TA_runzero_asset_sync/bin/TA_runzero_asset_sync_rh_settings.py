@@ -7,13 +7,11 @@ from splunktaucclib.rest_handler.endpoint import (
     RestModel,
     MultipleModel,
 )
-
 from splunktaucclib.rest_handler import admin_external, util
-from splunktaucclib.rest_handler.admin_external import AdminExternalHandler
 from splunk_aoblib.rest_migration import ConfigMigrationHandler
-from splunktaucclib.rest_handler.endpoint.validator import Validator
 
 util.remove_http_proxy_env_vars()
+
 
 fields_proxy = [
     field.RestField(
@@ -25,7 +23,7 @@ fields_proxy = [
     ), 
     field.RestField(
         'proxy_type',
-        required=True,
+        required=False,
         encrypted=False,
         default='http',
         validator=None
@@ -43,8 +41,8 @@ fields_proxy = [
         encrypted=False,
         default=None,
         validator=validator.String(
-            max_len=4096, 
             min_len=0, 
+            max_len=4096, 
         )
     ), 
     field.RestField(
@@ -53,8 +51,8 @@ fields_proxy = [
         encrypted=False,
         default=None,
         validator=validator.Number(
-            max_val=65535, 
             min_val=1, 
+            max_val=65535, 
         )
     ), 
     field.RestField(
@@ -64,7 +62,7 @@ fields_proxy = [
         default=None,
         validator=validator.String(
             min_len=0, 
-            max_len=256, 
+            max_len=50, 
         )
     ), 
     field.RestField(
@@ -74,7 +72,7 @@ fields_proxy = [
         default=None,
         validator=validator.String(
             min_len=0, 
-            max_len=256, 
+            max_len=8192, 
         )
     )
 ]
@@ -92,13 +90,19 @@ fields_logging = [
 ]
 model_logging = RestModel(fields_logging, name='logging')
 
+fields_additional_parameters = [
+]
+model_additional_parameters = RestModel(fields_additional_parameters, name='additional_parameters')
+
 endpoint = MultipleModel(
     'TA_runzero_asset_sync_settings',
     models=[
-        model_proxy, 
-        model_logging
+        model_proxy,
+        model_logging,
+        model_additional_parameters
     ],
 )
+
 
 if __name__ == '__main__':
     admin_external.handle(
