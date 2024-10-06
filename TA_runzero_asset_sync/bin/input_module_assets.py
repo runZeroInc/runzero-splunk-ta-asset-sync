@@ -43,8 +43,8 @@ def collect_events(helper, ew):
     if opt_services == None:
         opt_services = ""
     opt_page_size = helper.get_arg('batch_size')
-    if opt_page_size == None:
-        opt_page_size = ""
+    if opt_page_size == None or opt_page_size == "":
+        opt_page_size = "1000"
 
     # Get account credentials
     # NOTE: When testing inside the add-on builder UI, only username/password are
@@ -73,13 +73,13 @@ def collect_events(helper, ew):
     if len(helper.get_proxy()) > 0:
         use_proxy = True
 
-    # Page through API
-    page = 1
     headers = {"Authorization": f"Bearer {api_key}"}
     checkpoint_ts = opt_since
 
+    # Page through API
+    start_key = ""
     while True:
-        url = f"https://{api_endpoint}/api/v1.0/export/org/assets/sync/{opt_sync_type}/assets.json?search={opt_search_filter}&since={opt_since}&services={opt_services}&page={page}&page_size={opt_page_size}"
+        url = f"https://{api_endpoint}/api/v1.0/export/org/assets/sync/{opt_sync_type}/assets.json?search={opt_search_filter}&since={opt_since}&services={opt_services}&start_key={start_key}&page_size={opt_page_size}"
         response = helper.send_http_request(url, "GET", parameters=None, payload=None,
                                             headers=headers, cookies=None, verify=True, cert=None,
                                             timeout=None, use_proxy=use_proxy)
@@ -119,16 +119,16 @@ def collect_events(helper, ew):
             event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(asset), time=updated_at, done=True, unbroken=True)
             ew.write_event(event)
 
-        # Older versions of runZero don't support the page parameter on this API.
+        # Older versions of runZero don't support pagination
         # If the response isn't paged, finish now to avoid an infinite loop
-        if "page" not in r_json or r_json["page"] != page:
+        if "next_key" not in r_json:
             helper.log_warning("Batch fetching is not supported.  Please upgrade your runZero console")
             break
 
-        if "page_size" in r_json and len(assets) < r_json["page_size"]:
+        if r_json["next_key"] == "":
             break
 
-        page = page + 1
+        start_key = r_json["next_key"]
 
     # Save checkpoint so we'll only refresh newly created/updated assets on next iteration
     if checkpoint_ts > opt_since:
