@@ -1,11 +1,13 @@
 
 # encoding = utf-8
 
-import os
-import sys
-import time
 import datetime
 import json
+import os
+import requests
+import ssl
+import sys
+import time
 
 '''
     IMPORTANT
@@ -28,6 +30,13 @@ def validate_input(helper, definition):
 def collect_events(helper, ew):
     # (log_level can be "debug", "info", "warning", "error" or "critical", case insensitive)
     #helper.set_log_level("debug")
+
+    use_proxy = False
+    if len(helper.get_proxy()) > 0:
+        use_proxy = True
+
+    # XXX: Special code to use system SSL trust store
+    _patch_rest_helper(helper, use_proxy)
 
     stanza = helper.get_input_stanza_names()
     if isinstance(stanza, list):
@@ -68,10 +77,6 @@ def collect_events(helper, ew):
         opt_since = int(float(helper.get_check_point(checkpoint_key)))
     except (ValueError, TypeError):
         opt_since = 0
-
-    use_proxy = False
-    if len(helper.get_proxy()) > 0:
-        use_proxy = True
 
     headers = {"Authorization": f"Bearer {api_key}"}
     checkpoint_ts = opt_since
@@ -134,3 +139,55 @@ def collect_events(helper, ew):
     if checkpoint_ts > opt_since:
         helper.log_debug(f"Saving {checkpoint_ts} checkpoint to {checkpoint_key}")
         helper.save_check_point(checkpoint_key, int(checkpoint_ts))
+
+
+class CustomHTTPAdapter(requests.adapters.HTTPAdapter):
+    def init_poolmanager(self, *args, **kwargs):
+        ca_files = []
+        if sys.platform.startswith('linux'):
+            ca_files = [
+                '/etc/pki/tls/certs/ca-bundle.crt',   # RedHat
+                '/etc/pki/tls/cert.pem',              # Fedora <= 34, RHEL <= 9, CentOS <= 9
+                '/etc/ssl/certs/ca-certificates.crt', # Debian
+                '/etc/ssl/cert.pem',                  # Alpine, Arch, Fedora 34+, OpenWRT, RHEL 9+, BSD
+                '/etc/ssl/ca-bundle.pem',             # SUSE
+            ]
+        elif sys.platform.startswith('darwin'):
+            ca_files = ['/usr/local/etc/openssl/cert.pem']
+
+        ssl_ctx = ssl.create_default_context()
+        for ca_file in ca_files:
+            if os.path.isfile(ca_file):
+                ssl_ctx.load_verify_locations(ca_file)
+
+        super().init_poolmanager(*args, **kwargs, ssl_context=ssl_ctx)
+
+def _patch_rest_helper(helper, use_proxy):
+    # Monkey-patch the underlying requests session provided by
+    # the AOB library (typically in splunk_aoblib/rest_helper.py)
+    # to use the system trust store.
+    if not (helper and helper.rest_helper):
+        return
+
+    http_session = requests.Session()
+    http_session.mount(
+        'http://', requests.adapters.HTTPAdapter(max_retries=3))
+    http_session.mount(
+        'https://', CustomHTTPAdapter(max_retries=3))
+    helper.rest_helper.http_session = http_session
+
+    # Now set the requests_proxy variable, since this is normally
+    # set at the same time as the http_session.
+    if use_proxy:
+        proxy_uri = None
+        proxy = helper.get_proxy()
+        if proxy and proxy.get('proxy_url') and proxy.get('proxy_type'):
+            proxy_uri = proxy['proxy_url']
+            if proxy.get('proxy_port'):
+                proxy_uri = '{0}:{1}'.format(proxy_uri, proxy.get('proxy_port'))
+            if proxy.get('proxy_username') and proxy.get('proxy_password'):
+                proxy_uri = '{0}://{1}:{2}@{3}/'.format(proxy['proxy_type'], proxy[
+                    'proxy_username'], proxy['proxy_password'], proxy_uri)
+            else:
+                proxy_uri = '{0}://{1}'.format(proxy['proxy_type'], proxy_uri)
+        helper.rest_helper.requests_proxy = {'http': proxy_uri, 'https': proxy_uri}
