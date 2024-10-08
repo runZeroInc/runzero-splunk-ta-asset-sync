@@ -1,6 +1,6 @@
 # coding=utf-8
 #
-# Copyright © 2011-2024 Splunk, Inc.
+# Copyright © 2011-2015 Splunk, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"): you may
 # not use this file except in compliance with the License. You may obtain
@@ -14,11 +14,14 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from __future__ import absolute_import, division, print_function, unicode_literals
 import sys
 
 from .decorators import ConfigurationSetting
 from .search_command import SearchCommand
 
+from splunklib import six
+from splunklib.six.moves import map as imap, filter as ifilter
 
 # P1 [O] TODO: Discuss generates_timeorder in the class-level documentation for GeneratingCommand
 
@@ -251,7 +254,8 @@ class GeneratingCommand(SearchCommand):
 
         if not allow_empty_input:
             raise ValueError("allow_empty_input cannot be False for Generating Commands")
-        return super().process(argv=argv, ifile=ifile, ofile=ofile, allow_empty_input=True)
+        else:
+            return super(GeneratingCommand, self).process(argv=argv, ifile=ifile, ofile=ofile, allow_empty_input=True)
 
     # endregion
 
@@ -366,14 +370,18 @@ class GeneratingCommand(SearchCommand):
             iteritems = SearchCommand.ConfigurationSettings.iteritems(self)
             version = self.command.protocol_version
             if version == 2:
-                iteritems = [name_value1 for name_value1 in iteritems if name_value1[0] != 'distributed']
+                iteritems = ifilter(lambda name_value1: name_value1[0] != 'distributed', iteritems)
                 if not self.distributed and self.type == 'streaming':
-                    iteritems = [(name_value[0], 'stateful') if name_value[0] == 'type' else (name_value[0], name_value[1]) for name_value in iteritems]
+                    iteritems = imap(
+                        lambda name_value: (name_value[0], 'stateful') if name_value[0] == 'type' else (name_value[0], name_value[1]), iteritems)
             return iteritems
 
         # N.B.: Does not use Python 3 dict view semantics
-        items = iteritems
+        if not six.PY2:
+            items = iteritems
 
+        pass
         # endregion
 
+    pass
     # endregion

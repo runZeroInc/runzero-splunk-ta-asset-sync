@@ -1,6 +1,6 @@
 # coding=utf-8
 #
-# Copyright © 2011-2024 Splunk, Inc.
+# Copyright © 2011-2015 Splunk, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"): you may
 # not use this file except in compliance with the License. You may obtain
@@ -14,16 +14,22 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from __future__ import absolute_import, division, print_function, unicode_literals
+from splunklib import six
 
-from collections import OrderedDict
+try:
+    from collections import OrderedDict  # must be python 2.7
+except ImportError:
+    from ..ordereddict import OrderedDict
+
 from inspect import getmembers, isclass, isfunction
-
+from splunklib.six.moves import map as imap
 
 from .internals import ConfigurationSettingsType, json_encode_string
 from .validators import OptionName
 
 
-class Configuration:
+class Configuration(object):
     """ Defines the configuration settings for a search command.
 
     Documents, validates, and ensures that only relevant configuration settings are applied. Adds a :code:`name` class
@@ -66,7 +72,7 @@ class Configuration:
             name = o.__name__
             if name.endswith('Command'):
                 name = name[:-len('Command')]
-            o.name = str(name.lower())
+            o.name = six.text_type(name.lower())
 
             # Construct ConfigurationSettings instance for the command class
 
@@ -79,7 +85,7 @@ class Configuration:
             o.ConfigurationSettings.fix_up(o)
             Option.fix_up(o)
         else:
-            raise TypeError(f'Incorrect usage: Configuration decorator applied to {type(o)}')
+            raise TypeError('Incorrect usage: Configuration decorator applied to {0}'.format(type(o), o.__name__))
 
         return o
 
@@ -133,7 +139,7 @@ class ConfigurationSetting(property):
         for name, setting in definitions:
 
             if setting._name is None:
-                setting._name = name = str(name)
+                setting._name = name = six.text_type(name)
             else:
                 name = setting._name
 
@@ -184,14 +190,14 @@ class ConfigurationSetting(property):
                 continue
 
             if setting.fset is None:
-                raise ValueError(f'The value of configuration setting {name} is fixed')
+                raise ValueError('The value of configuration setting {} is fixed'.format(name))
 
             setattr(cls, backing_field_name, validate(specification, name, value))
             del values[name]
 
         if len(values) > 0:
-            settings = sorted(list(values.items()))
-            settings = [f'{n_v[0]}={n_v[1]}' for n_v in settings]
+            settings = sorted(list(six.iteritems(values)))
+            settings = imap(lambda n_v: '{}={}'.format(n_v[0], repr(n_v[1])), settings)
             raise AttributeError('Inapplicable configuration settings: ' + ', '.join(settings))
 
         cls.configuration_setting_definitions = definitions
@@ -209,7 +215,7 @@ class ConfigurationSetting(property):
         try:
             specification = ConfigurationSettingsType.specification_matrix[name]
         except KeyError:
-            raise AttributeError(f'Unknown configuration setting: {name}={repr(self._value)}')
+            raise AttributeError('Unknown configuration setting: {}={}'.format(name, repr(self._value)))
 
         return ConfigurationSettingsType.validate_configuration_setting, specification
 
@@ -343,7 +349,7 @@ class Option(property):
 
     # region Types
 
-    class Item:
+    class Item(object):
         """ Presents an instance/class view over a search command `Option`.
 
         This class is used by SearchCommand.process to parse and report on option values.
@@ -354,7 +360,7 @@ class Option(property):
             self._option = option
             self._is_set = False
             validator = self.validator
-            self._format = str if validator is None else validator.format
+            self._format = six.text_type if validator is None else validator.format
 
         def __repr__(self):
             return '(' + repr(self.name) + ', ' + repr(self._format(self.value)) + ')'
@@ -402,6 +408,7 @@ class Option(property):
             self._option.__set__(self._command, self._option.default)
             self._is_set = False
 
+        pass
         # endregion
 
     class View(OrderedDict):
@@ -416,26 +423,27 @@ class Option(property):
             OrderedDict.__init__(self, ((option.name, item_class(command, option)) for (name, option) in definitions))
 
         def __repr__(self):
-            text = 'Option.View([' + ','.join([repr(item) for item in self.values()]) + '])'
+            text = 'Option.View([' + ','.join(imap(lambda item: repr(item), six.itervalues(self))) + '])'
             return text
 
         def __str__(self):
-            text = ' '.join([str(item) for item in self.values() if item.is_set])
+            text = ' '.join([str(item) for item in six.itervalues(self) if item.is_set])
             return text
 
         # region Methods
 
         def get_missing(self):
-            missing = [item.name for item in self.values() if item.is_required and not item.is_set]
+            missing = [item.name for item in six.itervalues(self) if item.is_required and not item.is_set]
             return missing if len(missing) > 0 else None
 
         def reset(self):
-            for value in self.values():
+            for value in six.itervalues(self):
                 value.reset()
 
+        pass
         # endregion
 
-
+    pass
     # endregion
 
 

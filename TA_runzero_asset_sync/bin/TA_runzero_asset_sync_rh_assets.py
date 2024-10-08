@@ -18,19 +18,19 @@ fields = [
         'interval',
         required=True,
         encrypted=False,
-        default=None,
+        default='3600',
         validator=validator.Pattern(
-            regex=r"""^\-[1-9]\d*$|^\d*$""",
+            regex=r"""^\-[1-9]\d*$|^\d*$""", 
         )
-    ),
+    ), 
     field.RestField(
         'index',
         required=True,
         encrypted=False,
         default='default',
         validator=validator.String(
-            min_len=1,
-            max_len=80,
+            min_len=1, 
+            max_len=80, 
         )
     ),
     field.RestField(
@@ -46,40 +46,35 @@ fields = [
         encrypted=False,
         default='created',
         validator=None
-    ),
+    ), 
     field.RestField(
         'search_filter',
         required=False,
         encrypted=False,
         default=None,
         validator=validator.String(
-            min_len=0,
-            max_len=8192,
+            min_len=0, 
+            max_len=8192, 
         )
-    ),
+    ), 
     field.RestField(
-        'since',
-        required=True,
-        encrypted=False,
-        default=None,
-        validator=validator.String(
-            min_len=0,
-            max_len=8192,
-        )
-    ),
-    field.RestField(
-        'services',
-        required=True,
-        encrypted=False,
-        default=None
-    ),
-    field.RestField(
-        'builtin_system_checkpoint_storage_type',
+        'import_services',
         required=False,
         encrypted=False,
-        default='auto',
+        default='false',
         validator=None
-    ),
+    ), 
+    field.RestField(
+        'batch_size',
+        required=True,
+        encrypted=False,
+        default='1000',
+        validator=validator.String(
+            min_len=0, 
+            max_len=8192, 
+        )
+    ), 
+
     field.RestField(
         'disabled',
         required=False,

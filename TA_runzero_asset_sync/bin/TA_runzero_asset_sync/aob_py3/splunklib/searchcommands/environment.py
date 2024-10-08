@@ -1,6 +1,6 @@
 # coding=utf-8
 #
-# Copyright © 2011-2024 Splunk, Inc.
+# Copyright © 2011-2015 Splunk, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"): you may
 # not use this file except in compliance with the License. You may obtain
@@ -14,13 +14,14 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from logging import getLogger, root, StreamHandler
 from logging.config import fileConfig
-from os import chdir, environ, path, getcwd
-import sys
+from os import chdir, environ, path
+from splunklib.six.moves import getcwd
 
+import sys
 
 
 def configure_logging(logger_name, filename=None):
@@ -87,9 +88,9 @@ def configure_logging(logger_name, filename=None):
                 found = True
                 break
         if not found:
-            raise ValueError(f'Logging configuration file "{filename}" not found in local or default directory')
+            raise ValueError('Logging configuration file "{}" not found in local or default directory'.format(filename))
     elif not path.exists(filename):
-        raise ValueError(f'Logging configuration file "{filename}" not found')
+        raise ValueError('Logging configuration file "{}" not found'.format(filename))
 
     if filename is not None:
         global _current_logging_configuration_file
