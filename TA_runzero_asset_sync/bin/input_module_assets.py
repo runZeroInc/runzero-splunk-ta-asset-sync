@@ -54,7 +54,7 @@ def collect_events(helper, ew):
         opt_services = ""
     opt_page_size = helper.get_arg('batch_size')
     if opt_page_size == None or opt_page_size == "":
-        opt_page_size = "1000"
+        opt_page_size = "10000"
 
     # Get account credentials
     # NOTE: When testing inside the add-on builder UI, only username/password are

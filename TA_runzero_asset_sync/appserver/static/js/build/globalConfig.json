@@ -420,7 +420,7 @@
                             "help": "The number of assets to fetch during each request",
                             "required": true,
                             "type": "text",
-                            "defaultValue": "1000",
+                            "defaultValue": "10000",
                             "validators": [
                                 {
                                     "type": "string",
