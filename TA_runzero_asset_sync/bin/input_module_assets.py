@@ -2,6 +2,7 @@
 # encoding = utf-8
 
 import datetime
+import hashlib
 import json
 import os
 import requests
@@ -78,11 +79,29 @@ def collect_events(helper, ew):
     except (ValueError, TypeError):
         opt_since = 0
 
+    if opt_since == 0:
+        # try to find the old checkpoint value from the previous plugin version:
+        splunk_home = os.environ.get('SPLUNK_HOME')
+        old_chkpt_key = hashlib.sha256(stanza.encode("utf-8")).hexdigest()
+        old_chkpt_file = os.path.join(splunk_home or "", 'var', 'lib', 'splunk', 'modinputs', 'assets', old_chkpt_key)
+        helper.log_debug(f"Could not find checkpoint in kvstore, so attempting to read from file: {old_chkpt_file}")
+        if os.path.isfile(old_chkpt_file):
+            try:
+                with open(old_chkpt_file, "r") as f:
+                    old_chkpt_val = json.loads(f.read())
+                    if old_chkpt_val and old_chkpt_val['data'] and old_chkpt_val['data']['since']:
+                        opt_since = int(float(old_chkpt_val['data']['since']))
+            except Exception as e:
+                # ignore errors, we did our best
+                helper.log_debug(f"Could not find old checkpoint: {e}")
+
     headers = {"Authorization": f"Bearer {api_key}"}
     checkpoint_ts = opt_since
 
     # Page through API
     start_key = ""
+    cnt = 0
+    helper.log_debug(f"Fetching assets {opt_sync_type} since {checkpoint_ts}")
     while True:
         url = f"https://{api_endpoint}/api/v1.0/export/org/assets/sync/{opt_sync_type}/assets.json?search={opt_search_filter}&since={opt_since}&services={opt_services}&start_key={start_key}&page_size={opt_page_size}"
         response = helper.send_http_request(url, "GET", parameters=None, payload=None,
@@ -123,17 +142,23 @@ def collect_events(helper, ew):
             # Write the event to Splunk index
             event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(asset), time=updated_at, done=True, unbroken=True)
             ew.write_event(event)
+            cnt += 1
 
         # Older versions of runZero don't support pagination
         # If the response isn't paged, finish now to avoid an infinite loop
         if "next_key" not in r_json:
-            helper.log_warning("Batch fetching is not supported.  Please upgrade your runZero console")
+            helper.log_debug("Batch fetching was not supported by the console, so ingested all records in one request.")
             break
 
         if r_json["next_key"] == "":
             break
 
         start_key = r_json["next_key"]
+
+    if cnt > 0:
+        helper.log_info(f"Successfully imported {cnt} assets {opt_sync_type} since {opt_since}.")
+    else:
+        helper.log_info(f"No assets to import {opt_sync_type} since {opt_since}.")
 
     # Save checkpoint so we'll only refresh newly created/updated assets on next iteration
     if checkpoint_ts > opt_since:
