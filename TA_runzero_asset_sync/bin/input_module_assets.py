@@ -120,27 +120,26 @@ def collect_events(helper, ew):
             break
 
         for asset in assets:
+            event_ts = 0
             try:
-                updated_at = float(asset['updated_at'])
+                if opt_sync_type == 'created':
+                    event_ts = float(asset['created_at'])
+                else:
+                    event_ts = float(asset['updated_at'])
+                if event_ts > checkpoint_ts:
+                    checkpoint_ts = event_ts
             except (ValueError, TypeError):
-                updated_at = time.time()
-            try:
-                created_at = float(asset['created_at'])
-            except (ValueError, TypeError):
-                created_at = 0
+                event_ts = time.time()
+                helper.log_debug(f"Could not determine {opt_sync_type} time for asset.id={asset['id']}.  Using current time ({event_ts}) for _splunk_event_ts instead")
 
-            if opt_sync_type == "created":
-                if created_at > checkpoint_ts:
-                    checkpoint_ts = created_at
-            else:
-                if updated_at > checkpoint_ts:
-                    checkpoint_ts = updated_at
-
-            # TODO: Splunk isn't respecting the time sent through the event.  But why?
-            # We're using TIMESTAMP_FIELDS=updated_at in props.conf to work around.
+            # TODO: Splunk isn't respecting the time sent through the time event.  But why?
+            # We're adding extra timestamps to the JSON asset and using TIMESTAMP_FIELDS=splunk_event_ts
+            # in props.conf to work around.
+            asset['_splunk_event_ts'] = event_ts
+            asset['_splunk_ingest_ts'] = time.time()
 
             # Write the event to Splunk index
-            event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(asset), time=updated_at, done=True, unbroken=True)
+            event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(asset), time=event_ts, done=True, unbroken=True)
             ew.write_event(event)
             cnt += 1
 
@@ -158,7 +157,7 @@ def collect_events(helper, ew):
     if cnt > 0:
         helper.log_info(f"Successfully imported {cnt} assets {opt_sync_type} since {opt_since}.")
     else:
-        helper.log_info(f"No assets to import {opt_sync_type} since {opt_since}.")
+        helper.log_info(f"No assets {opt_sync_type} since {opt_since} to import.")
 
     # Save checkpoint so we'll only refresh newly created/updated assets on next iteration
     if checkpoint_ts > opt_since:
