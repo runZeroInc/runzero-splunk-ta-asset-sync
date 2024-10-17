@@ -106,7 +106,7 @@ def collect_events(helper, ew):
         url = f"https://{api_endpoint}/api/v1.0/export/org/assets/sync/{opt_sync_type}/assets.json?search={opt_search_filter}&since={opt_since}&services={opt_services}&start_key={start_key}&page_size={opt_page_size}"
         response = helper.send_http_request(url, "GET", parameters=None, payload=None,
                                             headers=headers, cookies=None, verify=True, cert=None,
-                                            timeout=None, use_proxy=use_proxy)
+                                            timeout=(10.0, 300), use_proxy=use_proxy)
         # check the response status, if the status is not sucessful, raise requests.HTTPError
         response.raise_for_status()
 
