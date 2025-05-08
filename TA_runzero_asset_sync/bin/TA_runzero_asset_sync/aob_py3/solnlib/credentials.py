@@ -321,7 +321,10 @@ class CredentialManager:
                 clear_password = ""
                 for index in sorted(field_clear.keys()):
                     if field_clear[index] != self.END_MARK:
-                        clear_password += field_clear[index]
+                        # XXX: runZero was here!!!
+                        # runZero modified this code to work with invalid passwords in passwords.conf files
+                        if field_clear[index] != None:
+                            clear_password += field_clear[index]
                     else:
                         break
                 values["clear_password"] = clear_password
