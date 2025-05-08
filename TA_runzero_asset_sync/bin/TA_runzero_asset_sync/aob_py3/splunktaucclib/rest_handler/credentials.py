@@ -308,8 +308,10 @@ class RestCredentials:
         # merge clear passwords to response data
         changed_item_list = []
 
+        # XXX: runZero was here!!!
+        # runZero modified this code to work with invalid passwords in passwords.conf files
         password_dict = {
-            pwd["username"]: json.loads(pwd["clear_password"]) for pwd in passwords
+            pwd["username"]: json.loads(pwd["clear_password"] or '{}') for pwd in passwords
         }
         # existed passwords models: previously has encrypted value
         existing_encrypted_items = [x for x in data if x["name"] in password_dict]
