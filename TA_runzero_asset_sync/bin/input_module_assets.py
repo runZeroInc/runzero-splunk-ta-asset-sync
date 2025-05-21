@@ -36,26 +36,6 @@ def collect_events(helper, ew):
     if len(helper.get_proxy()) > 0:
         use_proxy = True
 
-    # XXX: Special code to use system SSL trust store
-    _patch_rest_helper(helper, use_proxy)
-
-    stanza = helper.get_input_stanza_names()
-    if isinstance(stanza, list):
-        stanza = stanza[0]
-    checkpoint_key = f"{stanza}_{CHECKPOINT_KEY_SUFFIX}"
-
-    # Get options
-    opt_sync_type = helper.get_arg('sync_type')
-    opt_search_filter = helper.get_arg('search_filter')
-    if opt_search_filter == None:
-        opt_search_filter = ""
-    opt_services = helper.get_arg('services')
-    if opt_services == None:
-        opt_services = ""
-    opt_page_size = helper.get_arg('batch_size')
-    if opt_page_size == None or opt_page_size == "":
-        opt_page_size = "10000"
-
     # Get account credentials
     # NOTE: When testing inside the add-on builder UI, only username/password are
     # supported.  Add-on builder will overwrite the api_endpoint/api_key configuration
@@ -73,6 +53,31 @@ def collect_events(helper, ew):
         # Work around when testing inside add-on builder
         # add-on builder doesn't support custom global account parameters
         api_key = global_account['password']
+
+    tls_verify = True
+    if 'insecure_tls' in global_account:
+        if global_account['insecure_tls'] == 1 or global_account['insecure_tls'] == True or global_account['insecure_tls'] == '1':
+            tls_verify = False
+
+    # XXX: Special code to use system SSL trust store and disable hostname checking if TLS Verification is disabled.
+    _patch_rest_helper(helper, use_proxy, tls_verify)
+
+    stanza = helper.get_input_stanza_names()
+    if isinstance(stanza, list):
+        stanza = stanza[0]
+    checkpoint_key = f"{stanza}_{CHECKPOINT_KEY_SUFFIX}"
+
+    # Get options
+    opt_sync_type = helper.get_arg('sync_type')
+    opt_search_filter = helper.get_arg('search_filter')
+    if opt_search_filter == None:
+        opt_search_filter = ""
+    opt_services = helper.get_arg('services')
+    if opt_services == None:
+        opt_services = ""
+    opt_page_size = helper.get_arg('batch_size')
+    if opt_page_size == None or opt_page_size == "":
+        opt_page_size = "10000"
 
     try:
         opt_since = int(float(helper.get_check_point(checkpoint_key)))
@@ -105,7 +110,7 @@ def collect_events(helper, ew):
     while True:
         url = f"https://{api_endpoint}/api/v1.0/export/org/assets/sync/{opt_sync_type}/assets.json?search={opt_search_filter}&since={opt_since}&services={opt_services}&start_key={start_key}&page_size={opt_page_size}"
         response = helper.send_http_request(url, "GET", parameters=None, payload=None,
-                                            headers=headers, cookies=None, verify=True, cert=None,
+                                            headers=headers, cookies=None, verify=tls_verify, cert=None,
                                             timeout=(10.0, 300), use_proxy=use_proxy)
         # check the response status, if the status is not sucessful, raise requests.HTTPError
         response.raise_for_status()
@@ -166,6 +171,10 @@ def collect_events(helper, ew):
 
 
 class CustomHTTPAdapter(requests.adapters.HTTPAdapter):
+    def __init__(self, *args, **kwargs):
+        self.tls_verify = kwargs.pop('tls_verify', True)
+        super().__init__(*args, **kwargs)
+
     def init_poolmanager(self, *args, **kwargs):
         ca_files = []
         if sys.platform.startswith('linux'):
@@ -183,10 +192,11 @@ class CustomHTTPAdapter(requests.adapters.HTTPAdapter):
         for ca_file in ca_files:
             if os.path.isfile(ca_file):
                 ssl_ctx.load_verify_locations(ca_file)
+        ssl_ctx.check_hostname = self.tls_verify
 
         super().init_poolmanager(*args, **kwargs, ssl_context=ssl_ctx)
 
-def _patch_rest_helper(helper, use_proxy):
+def _patch_rest_helper(helper, use_proxy, tls_verify=True):
     # Monkey-patch the underlying requests session provided by
     # the AOB library (typically in splunk_aoblib/rest_helper.py)
     # to use the system trust store.
@@ -197,7 +207,7 @@ def _patch_rest_helper(helper, use_proxy):
     http_session.mount(
         'http://', requests.adapters.HTTPAdapter(max_retries=3))
     http_session.mount(
-        'https://', CustomHTTPAdapter(max_retries=3))
+        'https://', CustomHTTPAdapter(max_retries=3, tls_verify=tls_verify))
     helper.rest_helper.http_session = http_session
 
     # Now set the requests_proxy variable, since this is normally

@@ -30,6 +30,12 @@ fields = [
         encrypted=False,
         default='console.runzero.com'
     ),
+    field.RestField(
+        'insecure_tls',
+        required=False,
+        encrypted=False,
+        default=False,
+    ),
 ]
 model = RestModel(fields, name=None)
 
