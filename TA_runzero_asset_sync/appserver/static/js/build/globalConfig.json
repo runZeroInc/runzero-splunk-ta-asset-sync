@@ -2,7 +2,7 @@
     "meta": {
         "name": "TA_runzero_asset_sync",
         "displayName": "runZero Asset Sync",
-        "version": "3.1.2",
+        "version": "3.1.3",
         "restRoot": "TA_runzero_asset_sync",
         "_uccVersion": "5.39.0",
         "schemaVersion": "0.0.3"
@@ -83,6 +83,14 @@
                                     "errorMsg": "The URL should not contain http:// or https://"
                                 }
                             ]
+                        },
+                        {
+                            "field": "insecure_tls",
+                            "label": "Skip TLS certificate verification?",
+                            "type": "checkbox",
+                            "required": false,
+                            "help": "Connect without verifying TLS certificates.  This should only be necessary when connecting to a self-hosted runZero Console without a trusted TLS certificate.  Consider trusting the certificate on the Splunk host instead.  WARNING: Enabling this option may make the connection insecure.",
+                            "defaultValue": false
                         }
                     ]
                 },

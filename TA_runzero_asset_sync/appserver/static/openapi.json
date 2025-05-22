@@ -127,6 +127,9 @@
                     "api_key": {
                         "type": "string",
                         "format": "password"
+                    },
+                    "insecure_tls": {
+                        "type": "boolean"
                     }
                 }
             },
@@ -139,6 +142,9 @@
                     "api_key": {
                         "type": "string",
                         "format": "password"
+                    },
+                    "insecure_tls": {
+                        "type": "boolean"
                     }
                 }
             },
