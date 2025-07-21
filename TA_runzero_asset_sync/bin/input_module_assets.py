@@ -108,7 +108,10 @@ def collect_events(helper, ew):
     cnt = 0
     helper.log_debug(f"Fetching assets {opt_sync_type} since {checkpoint_ts}")
     while True:
-        url = f"https://{api_endpoint}/api/v1.0/export/org/assets/sync/{opt_sync_type}/assets.json?search={opt_search_filter}&since={opt_since}&services={opt_services}&start_key={start_key}&page_size={opt_page_size}"
+        if opt_sync_type == "all":
+            url = f"https://{api_endpoint}/api/v1.0/export/org/assets.json?search={opt_search_filter}&services={opt_services}&start_key={start_key}&page_size={opt_page_size}"
+        else:
+            url = f"https://{api_endpoint}/api/v1.0/export/org/assets/sync/{opt_sync_type}/assets.json?search={opt_search_filter}&since={opt_since}&services={opt_services}&start_key={start_key}&page_size={opt_page_size}"
         response = helper.send_http_request(url, "GET", parameters=None, payload=None,
                                             headers=headers, cookies=None, verify=tls_verify, cert=None,
                                             timeout=(10.0, 300), use_proxy=use_proxy)
@@ -126,11 +129,14 @@ def collect_events(helper, ew):
 
         for asset in assets:
             event_ts = 0
+            ingest_ts = time.time()
             try:
                 if opt_sync_type == 'created':
                     event_ts = float(asset['created_at'])
-                else:
+                elif opt_sync_type == 'updated':
                     event_ts = float(asset['updated_at'])
+                else:
+                    event_ts = ingest_ts
                 if event_ts > checkpoint_ts:
                     checkpoint_ts = event_ts
             except (ValueError, TypeError):
@@ -141,7 +147,7 @@ def collect_events(helper, ew):
             # We're adding extra timestamps to the JSON asset and using TIMESTAMP_FIELDS=splunk_event_ts
             # in props.conf to work around.
             asset['_splunk_event_ts'] = event_ts
-            asset['_splunk_ingest_ts'] = time.time()
+            asset['_splunk_ingest_ts'] = ingest_ts
 
             # Write the event to Splunk index
             event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(asset), time=event_ts, done=True, unbroken=True)
