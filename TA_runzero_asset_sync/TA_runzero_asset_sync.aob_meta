@@ -2,7 +2,7 @@
   "basic_builder": {
     "appname": "TA_runzero_asset_sync",
     "friendly_name": "runZero Asset Sync",
-    "version": "3.1.3",
+    "version": "3.1.4",
     "author": "runZero",
     "description": "This application synchronizes a runZero inventory with Splunk, pulling newly-found or updated hosts as configured.",
     "theme": "#65A637",
@@ -31,15 +31,19 @@
             "name": "sync_type",
             "label": "Sync Type",
             "default_value": "created",
-            "help_string": "The sync type determines whether to pull only new assets or all updated assets since the last sync.",
+            "help_string": "Determines which assets are imported from runZero on each sync.\nNew: Only sync new assets found since the last import.\nUpdated: Only sync assets that have been updated since the last import.\nAll: Sync all assets, regardless of when they were found or updated.",
             "possible_values": [
               {
                 "value": "created",
-                "label": "New Assets Only"
+                "label": "New"
               },
               {
                 "value": "updated",
-                "label": "All Updated Assets"
+                "label": "Updated"
+              },
+              {
+                "value": "all",
+                "label": "All"
               }
             ],
             "type": "radiogroup",
@@ -107,17 +111,21 @@
             "type": "customized_var",
             "name": "sync_type",
             "title": "Sync Type",
-            "description": "The sync type determines whether to pull only new assets or all updated assets since the last sync.",
+            "description": "Determines which assets are imported from runZero on each sync.\nNew: Only sync new assets found since the last import.\nUpdated: Only sync assets that have been updated since the last import.\nAll: Sync all assets, regardless of when they were found or updated.",
             "required_on_edit": false,
             "required_on_create": true,
             "possible_values": [
               {
                 "value": "created",
-                "label": "New Assets Only"
+                "label": "New"
               },
               {
                 "value": "updated",
-                "label": "All Updated Assets"
+                "label": "Updated"
+              },
+              {
+                "value": "all",
+                "label": "All"
               }
             ],
             "format_type": "radiogroup",

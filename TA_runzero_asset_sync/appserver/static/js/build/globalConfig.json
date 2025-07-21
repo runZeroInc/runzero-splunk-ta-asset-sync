@@ -2,7 +2,7 @@
     "meta": {
         "name": "TA_runzero_asset_sync",
         "displayName": "runZero Asset Sync",
-        "version": "3.1.3",
+        "version": "3.1.4",
         "restRoot": "TA_runzero_asset_sync",
         "_uccVersion": "5.39.0",
         "schemaVersion": "0.0.3"
@@ -353,8 +353,8 @@
                         },
                         {
                             "field": "sync_type",
-                            "label": "Sync Type",
-                            "help": "The sync type determines whether to pull only new assets or all updated assets since the last sync.",
+                            "label": "Asset Sync Type",
+                            "help": "Determines which assets are imported from runZero on each sync.\nNew: Only sync new assets found since the last import.\nUpdated: Only sync assets that have been updated since the last import.\nAll: Sync all assets, regardless of when they were found or updated.",
                             "required": true,
                             "type": "radio",
                             "defaultValue": "created",
@@ -362,11 +362,15 @@
                                 "items": [
                                     {
                                         "value": "created",
-                                        "label": "New Assets Only"
+                                        "label": "New"
                                     },
                                     {
                                         "value": "updated",
-                                        "label": "All Updated Assets"
+                                        "label": "Updated"
+                                    },
+                                    {
+                                        "value": "all",
+                                        "label": "All"
                                     }
                                 ]
                             }

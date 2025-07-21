@@ -47,7 +47,7 @@ class ModInputassets(modinput_wrapper.base_modinput.BaseModInput):
         For other input types, arguments should be get from input_module. Defining new input types could be easier.
         """
         scheme.add_argument(smi.Argument("sync_type", title="Sync Type",
-                                         description="The sync type determines whether to pull only new assets or all updated assets since the last sync.",
+                                         description="Determines which assets are imported from runZero on each sync.\nNew: Only sync new assets found since the last import.\nUpdated: Only sync assets that have been updated since the last import.\nAll: Sync all assets, regardless of when they were found or updated.",
                                          required_on_create=True,
                                          required_on_edit=False))
         scheme.add_argument(smi.Argument("search_filter", title="Search Filter",
