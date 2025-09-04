@@ -17,7 +17,7 @@ object-assign
 /*! js-yaml 4.1.0 https://github.com/nodeca/js-yaml @license MIT */
 
 /**
- * @remix-run/router v1.15.0
+ * @remix-run/router v1.17.0
  *
  * Copyright (c) Remix Software Inc.
  *
@@ -28,7 +28,7 @@ object-assign
  */
 
 /**
- * React Router v6.22.0
+ * React Router v6.24.0
  *
  * Copyright (c) Remix Software Inc.
  *

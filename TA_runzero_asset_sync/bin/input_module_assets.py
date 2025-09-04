@@ -16,6 +16,11 @@ import time
     Do not edit any other part in this file.
     This file is generated only once when creating the modular input.
 '''
+'''
+# For advanced users, if you want to create single instance mod input, uncomment this method.
+def use_single_instance_mode():
+    return True
+'''
 
 CHECKPOINT_KEY_SUFFIX="since"
 
@@ -25,7 +30,8 @@ def validate_input(helper, definition):
     # This example accesses the modular input variable
     # sync_type = definition.parameters.get('sync_type', None)
     # search_filter = definition.parameters.get('search_filter', None)
-    # services = definition.parameters.get('services', None)
+    # import_services = definition.parameters.get('import_services', None)
+    # batch_size = definition.parameters.get('batch_size', None)
     pass
 
 def collect_events(helper, ew):
