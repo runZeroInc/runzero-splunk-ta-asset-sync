@@ -2,10 +2,10 @@
     "meta": {
         "name": "TA_runzero_asset_sync",
         "displayName": "runZero Asset Sync",
-        "version": "3.1.4",
+        "version": "3.2.0",
         "restRoot": "TA_runzero_asset_sync",
-        "_uccVersion": "5.39.0",
-        "schemaVersion": "0.0.3"
+        "schemaVersion": "0.0.8",
+        "_uccVersion": "5.48.0"
     },
     "pages": {
         "configuration": {
@@ -195,35 +195,36 @@
                     "title": "Logging",
                     "entity": [
                         {
-                            "field": "loglevel",
-                            "label": "Log level",
                             "type": "singleSelect",
+                            "label": "Log level",
                             "options": {
                                 "disableSearch": true,
                                 "autoCompleteFields": [
                                     {
-                                        "label": "DEBUG",
-                                        "value": "DEBUG"
+                                        "value": "DEBUG",
+                                        "label": "DEBUG"
                                     },
                                     {
-                                        "label": "INFO",
-                                        "value": "INFO"
+                                        "value": "INFO",
+                                        "label": "INFO"
                                     },
                                     {
-                                        "label": "WARNING",
-                                        "value": "WARNING"
+                                        "value": "WARNING",
+                                        "label": "WARNING"
                                     },
                                     {
-                                        "label": "ERROR",
-                                        "value": "ERROR"
+                                        "value": "ERROR",
+                                        "label": "ERROR"
                                     },
                                     {
-                                        "label": "CRITICAL",
-                                        "value": "CRITICAL"
+                                        "value": "CRITICAL",
+                                        "label": "CRITICAL"
                                     }
                                 ]
                             },
-                            "defaultValue": "INFO"
+                            "defaultValue": "INFO",
+                            "field": "loglevel",
+                            "required": true
                         }
                     ]
                 }
@@ -378,7 +379,7 @@
                         {
                             "field": "import_services",
                             "label": "Import Services",
-                            "help": "Enable or disable importing your service",
+                            "help": "Enable or disable importing services alongside assets.",
                             "required": false,
                             "type": "singleSelect",
                             "defaultValue": "false",
@@ -412,19 +413,19 @@
                             ]
                         },
                         {
+                            "type": "text",
                             "field": "interval",
                             "label": "Interval",
-                            "type": "text",
-                            "required": true,
                             "defaultValue": "3600",
-                            "help": "How often to fetch assets",
                             "validators": [
                                 {
                                     "type": "regex",
-                                    "pattern": "^\\-[1-9]\\d*$|^\\d*$",
-                                    "errorMsg": "Interval must be an integer."
+                                    "errorMsg": "Interval must be an integer.",
+                                    "pattern": "^(?:-1|\\d+(?:\\.\\d+)?)$"
                                 }
-                            ]
+                            ],
+                            "help": "How often to fetch assets",
+                            "required": true
                         },
                         {
                             "field": "batch_size",

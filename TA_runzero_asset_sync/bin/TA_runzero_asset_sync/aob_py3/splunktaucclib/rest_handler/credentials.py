@@ -1,11 +1,11 @@
 #
-# Copyright 2021 Splunk Inc.
+# Copyright 2025 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-# http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -150,7 +150,10 @@ class RestCredentials:
                     data[field_name] = self.PASSWORD
                 else:
                     # if the field value is '******', keep the original value
-                    original_clear_password = self._get(name)
+                    try:
+                        original_clear_password = self._get(name)
+                    except CredentialNotExistException:
+                        original_clear_password = None
                     if original_clear_password and original_clear_password.get(
                         field_name
                     ):
@@ -163,7 +166,10 @@ class RestCredentials:
             else:
                 # field not in data
                 # if the optional encrypted field is not passed, keep original if it exist
-                original_clear_password = self._get(name)
+                try:
+                    original_clear_password = self._get(name)
+                except CredentialNotExistException:
+                    original_clear_password = None
                 if original_clear_password and original_clear_password.get(field_name):
                     encrypting[field_name] = original_clear_password[field_name]
                     data[field_name] = self.PASSWORD
@@ -289,9 +295,7 @@ class RestCredentials:
             host=self._splunkd_info.hostname,
             port=self._splunkd_info.port,
         )
-
-        all_passwords = credential_manager._get_all_passwords()
-        # filter by realm
+        all_passwords = credential_manager.get_clear_passwords_in_realm()
         realm_passwords = [x for x in all_passwords if x["realm"] == self._realm]
         return self._merge_passwords(data, realm_passwords)
 
@@ -333,11 +337,6 @@ class RestCredentials:
                     if existed_model["content"][k] == self.PASSWORD:
                         # set existing as raw value
                         existed_model["content"][k] = v
-                    elif existed_model["content"][k] ==  "********":
-                        # set existing as raw value, magic patten is the old one so rewrite this item to fix it.
-                        # see https://community.splunk.com/t5/All-Apps-and-Add-ons/Splunk-Addon-Builder-4-package-resetting-password-conf-entries/m-p/584187/highlight/true
-                        existed_model["content"][k] = v
-                        need_write_magic_pwd = True
                     elif existed_model["content"][k] == "":
                         # mark to delete it
                         clear_password[k] = ""
@@ -398,10 +397,7 @@ class RestCredentials:
     def _get(self, name):
         context = RestCredentialsContext(self._endpoint, name)
         mgr = self._get_manager(context)
-        try:
-            string = mgr.get_password(user=context.username())
-        except CredentialNotExistException:
-            return None
+        string = mgr.get_password(user=context.username())
         return context.load(string)
 
     def _filter(self, name, data, encrypted_data):
