@@ -84,6 +84,9 @@ def collect_events(helper, ew):
     opt_page_size = helper.get_arg('batch_size')
     if opt_page_size == None or opt_page_size == "":
         opt_page_size = "10000"
+    opt_fields = helper.get_arg('fields')
+    if opt_fields == None:
+        opt_fields = ""
 
     try:
         opt_since = int(float(helper.get_check_point(checkpoint_key)))
@@ -115,9 +118,9 @@ def collect_events(helper, ew):
     helper.log_debug(f"Fetching assets {opt_sync_type} since {checkpoint_ts}")
     while True:
         if opt_sync_type == "all":
-            url = f"https://{api_endpoint}/api/v1.0/export/org/assets.json?search={opt_search_filter}&services={opt_services}&start_key={start_key}&page_size={opt_page_size}"
+            url = f"https://{api_endpoint}/api/v1.0/export/org/assets.json?search={opt_search_filter}&services={opt_services}&fields={opt_fields}&start_key={start_key}&page_size={opt_page_size}"
         else:
-            url = f"https://{api_endpoint}/api/v1.0/export/org/assets/sync/{opt_sync_type}/assets.json?search={opt_search_filter}&since={opt_since}&services={opt_services}&start_key={start_key}&page_size={opt_page_size}"
+            url = f"https://{api_endpoint}/api/v1.0/export/org/assets/sync/{opt_sync_type}/assets.json?search={opt_search_filter}&since={opt_since}&services={opt_services}&fields={opt_fields}&start_key={start_key}&page_size={opt_page_size}"
         response = helper.send_http_request(url, "GET", parameters=None, payload=None,
                                             headers=headers, cookies=None, verify=tls_verify, cert=None,
                                             timeout=(10.0, 300), use_proxy=use_proxy)

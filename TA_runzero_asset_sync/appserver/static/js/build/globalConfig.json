@@ -2,7 +2,7 @@
     "meta": {
         "name": "TA_runzero_asset_sync",
         "displayName": "runZero Asset Sync",
-        "version": "3.2.0",
+        "version": "3.2.2",
         "restRoot": "TA_runzero_asset_sync",
         "schemaVersion": "0.0.8",
         "_uccVersion": "5.48.0"
@@ -253,42 +253,46 @@
                     }
                 ],
                 "moreInfo": [
-                    {
-                        "field": "name",
-                        "label": "Name"
-                    },
-                    {
-                        "field": "index",
-                        "label": "Index"
-                    },
-                    {
-                        "field": "disabled",
-                        "label": "Status"
-                    },
-                    {
-                        "field": "sync_type",
-                        "label": "Sync Type"
-                    },
-                    {
-                        "field": "search_filter",
-                        "label": "Search Filter"
-                    },
-                    {
-                        "field": "import_services",
-                        "label": "Import Services"
-                    },
-                    {
-                        "field": "interval",
-                        "label": "Interval"
-                    },
-                    {
-                        "field": "batch_size",
-                        "label": "Batch Size"
-                    },
-                    {
-                        "field": "global_account",
-                        "label": "Global Account"
-                    }
+                  {
+                    "field": "name",
+                    "label": "Name"
+                  },
+                  {
+                    "field": "index",
+                    "label": "Index"
+                  },
+                  {
+                    "field": "disabled",
+                    "label": "Status"
+                  },
+                  {
+                    "field": "sync_type",
+                    "label": "Sync Type"
+                  },
+                  {
+                    "field": "search_filter",
+                    "label": "Search Filter"
+                  },
+                  {
+                    "field": "fields",
+                    "label": "Asset Fields"
+                  },
+                  {
+                    "field": "import_services",
+                    "label": "Import Services"
+                  },
+                  {
+                    "field": "interval",
+                    "label": "Interval"
+                  },
+                  {
+                    "field": "batch_size",
+                    "label": "Batch Size"
+                  },
+                  {
+                    "field": "global_account",
+                    "label": "Global Account"
+                  }
                 ],
                 "actions": [
                     "edit",
@@ -302,147 +306,162 @@
                     "name": "assets",
                     "title": "Assets",
                     "entity": [
-                        {
-                            "field": "name",
-                            "label": "Name",
-                            "type": "text",
-                            "help": "Enter a unique name for the data input",
-                            "required": true,
-                            "validators": [
-                                {
-                                    "type": "regex",
-                                    "pattern": "^[a-zA-Z]\\w*$",
-                                    "errorMsg": "Input Name must start with a letter and followed by alphabetic letters, digits or underscores."
-                                },
-                                {
-                                    "type": "string",
-                                    "minLength": 1,
-                                    "maxLength": 100,
-                                    "errorMsg": "Length of input name should be between 1 and 100"
-                                }
-                            ]
-                        },
-                        {
-                            "field": "global_account",
-                            "label": "Global Account",
-                            "help": "",
-                            "required": true,
-                            "type": "singleSelect",
-                            "options": {
-                                "referenceName": "account"
-                            }
-                        },
-                        {
-                            "field": "index",
-                            "label": "Index",
-                            "type": "singleSelect",
-                            "defaultValue": "default",
-                            "options": {
-                                "endpointUrl": "data/indexes",
-                                "denyList": "^_.*$",
-                                "createSearchChoice": true
-                            },
-                            "required": true,
-                            "validators": [
-                                {
-                                    "type": "string",
-                                    "minLength": 1,
-                                    "maxLength": 80,
-                                    "errorMsg": "Length of index name should be between 1 and 80."
-                                }
-                            ]
-                        },
-                        {
-                            "field": "sync_type",
-                            "label": "Asset Sync Type",
-                            "help": "Determines which assets are imported from runZero on each sync.\nNew: Only sync new assets found since the last import.\nUpdated: Only sync assets that have been updated since the last import.\nAll: Sync all assets, regardless of when they were found or updated.",
-                            "required": true,
-                            "type": "radio",
-                            "defaultValue": "created",
-                            "options": {
-                                "items": [
-                                    {
-                                        "value": "created",
-                                        "label": "New"
-                                    },
-                                    {
-                                        "value": "updated",
-                                        "label": "Updated"
-                                    },
-                                    {
-                                        "value": "all",
-                                        "label": "All"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "field": "import_services",
-                            "label": "Import Services",
-                            "help": "Enable or disable importing services alongside assets.",
-                            "required": false,
-                            "type": "singleSelect",
-                            "defaultValue": "false",
-                            "options": {
-                                "disableSearch": true,
-                                "autoCompleteFields": [
-                                    {
-                                        "value": "true",
-                                        "label": "Enabled"
-                                    },
-                                    {
-                                        "value": "false",
-                                        "label": "Disabled"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "field": "search_filter",
-                            "label": "Search Filter",
-                            "help": "The search filter can be used to limit the types of assets returned by the asset sync. See the runZero Query Syntax documentation for additional details.",
-                            "required": false,
-                            "type": "text",
-                            "validators": [
-                                {
-                                    "type": "string",
-                                    "minLength": 0,
-                                    "maxLength": 8192,
-                                    "errorMsg": "Max length of text input is 8192"
-                                }
-                            ]
-                        },
-                        {
-                            "type": "text",
-                            "field": "interval",
-                            "label": "Interval",
-                            "defaultValue": "3600",
-                            "validators": [
-                                {
-                                    "type": "regex",
-                                    "errorMsg": "Interval must be an integer.",
-                                    "pattern": "^(?:-1|\\d+(?:\\.\\d+)?)$"
-                                }
-                            ],
-                            "help": "How often to fetch assets",
-                            "required": true
-                        },
-                        {
-                            "field": "batch_size",
-                            "label": "Batch Size",
-                            "help": "The number of assets to fetch during each request",
-                            "required": true,
-                            "type": "text",
-                            "defaultValue": "10000",
-                            "validators": [
-                                {
-                                    "type": "string",
-                                    "minLength": 0,
-                                    "maxLength": 8192,
-                                    "errorMsg": "Max length of text input is 8192"
-                                }
-                            ]
+                      {
+                        "field": "name",
+                        "label": "Name",
+                        "type": "text",
+                        "help": "Enter a unique name for the data input",
+                        "required": true,
+                        "validators": [
+                          {
+                            "type": "regex",
+                            "pattern": "^[a-zA-Z]\\w*$",
+                            "errorMsg": "Input Name must start with a letter and followed by alphabetic letters, digits or underscores."
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "errorMsg": "Length of input name should be between 1 and 100"
+                          }
+                        ]
+                      },
+                      {
+                        "field": "global_account",
+                        "label": "Global Account",
+                        "help": "",
+                        "required": true,
+                        "type": "singleSelect",
+                        "options": {
+                          "referenceName": "account"
                         }
+                      },
+                      {
+                        "field": "index",
+                        "label": "Index",
+                        "type": "singleSelect",
+                        "defaultValue": "default",
+                        "options": {
+                          "endpointUrl": "data/indexes",
+                          "denyList": "^_.*$",
+                          "createSearchChoice": true
+                        },
+                        "required": true,
+                        "validators": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 80,
+                            "errorMsg": "Length of index name should be between 1 and 80."
+                          }
+                        ]
+                      },
+                      {
+                        "field": "sync_type",
+                        "label": "Asset Sync Type",
+                        "help": "Determines which assets are imported from runZero on each sync.\nNew: Only sync new assets found since the last import.\nUpdated: Only sync assets that have been updated since the last import.\nAll: Sync all assets, regardless of when they were found or updated.",
+                        "required": true,
+                        "type": "radio",
+                        "defaultValue": "created",
+                        "options": {
+                          "items": [
+                            {
+                              "value": "created",
+                              "label": "New"
+                            },
+                            {
+                              "value": "updated",
+                              "label": "Updated"
+                            },
+                            {
+                              "value": "all",
+                              "label": "All"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "field": "import_services",
+                        "label": "Import Services",
+                        "help": "Enable or disable importing services alongside assets.",
+                        "required": false,
+                        "type": "singleSelect",
+                        "defaultValue": "false",
+                        "options": {
+                          "disableSearch": true,
+                          "autoCompleteFields": [
+                            {
+                              "value": "true",
+                              "label": "Enabled"
+                            },
+                            {
+                              "value": "false",
+                              "label": "Disabled"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "field": "search_filter",
+                        "label": "Search Filter",
+                        "help": "The search filter can be used to limit the types of assets returned by the asset sync. See the runZero Query Syntax documentation for additional details.",
+                        "required": false,
+                        "type": "text",
+                        "validators": [
+                          {
+                            "type": "string",
+                            "minLength": 0,
+                            "maxLength": 8192,
+                            "errorMsg": "Max length of text input is 8192"
+                          }
+                        ]
+                      },
+                      {
+                        "field": "fields",
+                        "label": "Asset Fields",
+                        "help": "A comma-separated list of fields to return for each asset. If empty, all fields will be returned.",
+                        "required": false,
+                        "type": "text",
+                        "validators": [
+                          {
+                            "type": "string",
+                            "minLength": 0,
+                            "maxLength": 8192,
+                            "errorMsg": "Max length of text input is 8192"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "text",
+                        "field": "interval",
+                        "label": "Interval",
+                        "defaultValue": "3600",
+                        "validators": [
+                          {
+                            "type": "regex",
+                            "errorMsg": "Interval must be an integer.",
+                            "pattern": "^(?:-1|\\d+(?:\\.\\d+)?)$"
+                          }
+                        ],
+                        "help": "How often to fetch assets",
+                        "required": true
+                      },
+                      {
+                        "field": "batch_size",
+                        "label": "Batch Size",
+                        "help": "The number of assets to fetch during each request",
+                        "required": true,
+                        "type": "text",
+                        "defaultValue": "10000",
+                        "validators": [
+                          {
+                            "type": "string",
+                            "minLength": 0,
+                            "maxLength": 8192,
+                            "errorMsg": "Max length of text input is 8192"
+                          }
+                        ]
+                      }
                     ]
                 }
             ]

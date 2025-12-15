@@ -10,7 +10,6 @@ import modinput_wrapper.base_modinput
 from splunklib import modularinput as smi
 
 
-
 import input_module_assets as input_module
 
 bin_dir = os.path.basename(__file__)
@@ -54,6 +53,15 @@ class ModInputassets(modinput_wrapper.base_modinput.BaseModInput):
                                          description="The search filter can be used to limit the types of assets returned by the asset sync. See the runZero Query Syntax documentation for additional details.",
                                          required_on_create=False,
                                          required_on_edit=False))
+        scheme.add_argument(
+            smi.Argument(
+                "fields",
+                title="Asset Fields",
+                description="The Asset Fields is an optional parameter to limit the fields that are pulled for the asset. This would be a comma separated list of fields to include. You can leave this empty to include all Asset Fields.",
+                required_on_create=False,
+                required_on_edit=False,
+            )
+        )
         scheme.add_argument(smi.Argument("import_services", title="Import Services",
                                          description="Enable or disable importing your service",
                                          required_on_create=False,
