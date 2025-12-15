@@ -57,7 +57,7 @@ class ModInputassets(modinput_wrapper.base_modinput.BaseModInput):
             smi.Argument(
                 "fields",
                 title="Asset Fields",
-                description="The Asset Fields is an optional parameter to limit the fields that are pulled for the asset. This would be a comma separated list of fields to include. You can leave this empty to include all Asset Fields.",
+                description="A comma-separated list of fields to return for each asset. If empty, all fields will be returned.",
                 required_on_create=False,
                 required_on_edit=False,
             )
