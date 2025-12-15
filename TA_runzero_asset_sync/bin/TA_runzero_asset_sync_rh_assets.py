@@ -58,6 +58,16 @@ fields = [
         )
     ), 
     field.RestField(
+        'fields',
+        required=False,
+        encrypted=False,
+        default=None,
+        validator=validator.String(
+            min_len=0, 
+            max_len=8192, 
+        )
+    ), 
+    field.RestField(
         'import_services',
         required=False,
         encrypted=False,

@@ -3,4 +3,5 @@ sync_type = Determines which assets are imported from runZero on each sync. New:
 search_filter = The search filter can be used to limit the types of assets returned by the asset sync. See the runZero Query Syntax documentation for additional details.
 import_services = Enable or disable importing services alongside assets.
 batch_size = The number of assets to fetch during each request
+fields = A comma-separated list of fields to return for each asset. If empty, all fields will be returned.
 global_account =
