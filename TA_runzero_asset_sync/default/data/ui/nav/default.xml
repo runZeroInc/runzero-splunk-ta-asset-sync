@@ -1,5 +1,16 @@
-<nav search_view="search" color="#65A637">
-<view name="inputs" default="true" />
-<view name="configuration"/>
-<view name="search" label="Search"/>
+<nav search_view="search" color="#008099">
+    <view name="inputs" default="true" />
+    <view name="configuration"/>
+    <view name="search" label="Search"/>
+    
+    <collection label="Dashboards">
+        <a href="/app/TA_runzero_asset_sync/asset_overview">Asset Overview</a>
+        
+        <a href="/app/TA_runzero_asset_sync/asset_risk">Asset Risk</a>
+    </collection>
+    
+    <collection label="Saved Searches">
+        <a href="/app/TA_runzero_asset_sync/manager/saved/searches">Scheduled Reports</a>
+    </collection>
+
 </nav>

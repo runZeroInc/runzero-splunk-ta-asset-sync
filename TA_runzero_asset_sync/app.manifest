@@ -5,7 +5,7 @@
     "id": {
       "group": null,
       "name": "TA_runzero_asset_sync",
-      "version": "3.2.2"
+      "version": "3.3.0"
     },
     "author": [
       {
@@ -15,7 +15,7 @@
       }
     ],
     "releaseDate": null,
-    "description": "This application synchronizes a runZero inventory with Splunk, pulling newly-found or updated hosts as configured.",
+    "description": "This application synchronizes a runZero inventory with Splunk, pulling newly-found or updated hosts as configured. It also includes saved searchs and out of the box dashboards to show how to use the data natively in Splunk.",
     "classification": {
       "intendedAudience": null,
       "categories": [],
