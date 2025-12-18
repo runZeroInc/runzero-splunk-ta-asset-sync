@@ -86,10 +86,10 @@
       </chart>
     </panel>
     <panel>
-      <title>Vulnerability Trends (Critical &amp; High)</title>
+      <title>Asset with High or Critical Risk</title>
       <chart>
         <search>
-          <query>sourcetype=assets (risk="critical" OR risk="high") | timechart span=auto count as critical_vulns</query>
+          <query>sourcetype=assets risk="critical" | timechart span=1d count as critical_vulns</query>
           <earliest>$time_tok.earliest$</earliest>
           <latest>$time_tok.latest$</latest>
         </search>

@@ -10,7 +10,7 @@
     </collection>
     
     <collection label="Saved Searches">
-        <a href="/app/TA_runzero_asset_sync/manager/saved/searches">Scheduled Reports</a>
+        <a href="/app/TA_runzero_asset_sync/reports">Scheduled Reports</a>
     </collection>
 
 </nav>
