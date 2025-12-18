@@ -15,7 +15,7 @@
       }
     ],
     "releaseDate": null,
-    "description": "This application synchronizes a runZero inventory with Splunk, pulling newly-found or updated hosts as configured. It also includes saved searchs and out of the box dashboards to show how to use the data natively in Splunk.",
+    "description": "This application synchronizes a runZero inventory with Splunk, pulling newly-found or updated hosts as configured. It also includes saved searches and out of the box dashboards to show how to use the data natively in Splunk.",
     "classification": {
       "intendedAudience": null,
       "categories": [],
