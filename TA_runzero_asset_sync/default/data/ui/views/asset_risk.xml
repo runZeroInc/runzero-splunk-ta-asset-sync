@@ -1,0 +1,142 @@
+<form theme="dark" version="1.1">
+  <label>runZero Asset Risk Overview</label>
+  <fieldset submitButton="false">
+    <input type="time" token="time_tok" searchWhenChanged="true">
+      <label>Time Range</label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+
+  <row>
+    <panel>
+      <title>Total Environment Risk Score</title>
+      <single>
+        <search>
+          <query>sourcetype=assets | dedup id | stats sum(risk_rank) AS total_risk_score</query>
+          <earliest>$time_tok.earliest$</earliest>
+          <latest>$time_tok.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="colorMode">block</option>
+        <option name="rangeColors">["#EE286A","#EE286A"]</option>
+        <option name="useColors">1</option>
+        <option name="underLabel">Cumulative Risk Rank</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Assets by Risk Category</title>
+      <chart>
+        <search>
+          <query>sourcetype=assets risk != "" | dedup id | stats count AS asset_count BY risk | sort 0 - asset_count</query>
+          <earliest>$time_tok.earliest$</earliest>
+          <latest>$time_tok.latest$</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.seriesColors">{"asset_count":0x02B699}</option>
+        <option name="drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Top 10 High Risk Assets</title>
+      <table>
+        <search>
+          <query>sourcetype=assets | dedup id | sort - risk_rank | head 10 | table host, dvc_ip, risk, risk_rank | rename host AS "Asset Name", dvc_ip AS "IP Address", risk AS "Severity", risk_rank AS "Risk Score"</query>
+          <earliest>$time_tok.earliest$</earliest>
+          <latest>$time_tok.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Total Risk by OS Product</title>
+      <chart>
+        <search>
+          <query>sourcetype=assets os_product != "" risk_rank != "" | dedup id | stats sum(risk_rank) AS risk_score BY os_product | sort 0 - risk_score | head 10</query>
+          <earliest>$time_tok.earliest$</earliest>
+          <latest>$time_tok.latest$</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.seriesColors">{"risk_score":0x008099}</option>
+        <option name="drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Vulnerability Severity Distribution</title>
+      <chart>
+        <search>
+          <query>sourcetype=assets risk!="" | stats count by risk | sort -count</query>
+          <earliest>$time_tok.earliest$</earliest>
+          <latest>$time_tok.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.fieldColors">{"critical":0xEE286A,"high":0xEE286A,"medium":0xFFC107,"low":0x008099}</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Asset with High or Critical Risk</title>
+      <chart>
+        <search>
+          <query>sourcetype=assets risk="critical" | timechart span=1d count as critical_vulns</query>
+          <earliest>$time_tok.earliest$</earliest>
+          <latest>$time_tok.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.seriesColors">{"critical_vulns":0xEE286A}</option>
+      </chart>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Avg Vulnerabilities per Asset</title>
+      <single>
+        <search>
+          <query>sourcetype=assets | stats avg(vulnerability_count) as avg_vulns</query>
+          <earliest>$time_tok.earliest$</earliest>
+          <latest>$time_tok.latest$</latest>
+        </search>
+        <option name="rangeColors">["#FFC107","#FFC107"]</option>
+        <option name="useColors">1</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="underLabel">Avg Vuln Count</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Max Vulnerabilities on Single Asset</title>
+      <single>
+        <search>
+          <query>sourcetype=assets | stats max(vulnerability_count) as max_vulns</query>
+          <earliest>$time_tok.earliest$</earliest>
+          <latest>$time_tok.latest$</latest>
+        </search>
+        <option name="rangeColors">["#EE286A","#EE286A"]</option>
+        <option name="useColors">1</option>
+        <option name="underLabel">Max Vuln Count</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Outlier Score Distribution</title>
+      <chart>
+        <search>
+          <query>sourcetype=assets outlier_score!="" | stats count by outlier_score</query>
+          <earliest>$time_tok.earliest$</earliest>
+          <latest>$time_tok.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+      </chart>
+    </panel>
+  </row>
+</form>
