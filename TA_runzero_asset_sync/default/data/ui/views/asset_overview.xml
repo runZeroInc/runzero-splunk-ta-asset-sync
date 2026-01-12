@@ -15,7 +15,7 @@
       <title>Unique Asset Count</title>
       <single>
         <search>
-          <query>sourcetype=assets | dedup id | stats count AS total_assets</query>
+          <query>search = `runzero-index` sourcetype=assets | dedup id | stats count AS total_assets</query>
           <earliest>$time_tok.earliest$</earliest>
           <latest>$time_tok.latest$</latest>
         </search>
@@ -29,7 +29,7 @@
       <title>Assets by Type</title>
       <chart>
         <search>
-          <query>sourcetype=assets type != "" | dedup id | stats count BY type | sort - count</query>
+          <query>search = `runzero-index` sourcetype=assets type != "" | dedup id | stats count BY type | sort - count</query>
           <earliest>$time_tok.earliest$</earliest>
           <latest>$time_tok.latest$</latest>
         </search>
@@ -43,7 +43,7 @@
       <title>Asset OS Version Breakdown (Top 10)</title>
       <chart>
         <search>
-          <query>sourcetype=assets os_product != "" os_version != "" | dedup id | chart count over os_product by os_version | sort - Count | head 10</query>
+          <query>search = `runzero-index` sourcetype=assets os_product != "" os_version != "" | dedup id | chart count over os_product by os_version | sort - Count | head 10</query>
           <earliest>$time_tok.earliest$</earliest>
           <latest>$time_tok.latest$</latest>
         </search>
@@ -58,7 +58,7 @@
       <title>New Assets (Last 24 Hours)</title>
       <table>
         <search>
-          <query>sourcetype=assets earliest=-1d | dedup id | sort 0 - updated_at | table host, dvc_ip, os_product, asset_updated | rename host as "Asset Name", dvc_ip as "Primary IP", os_product as "OS", asset_updated as "Last Sync"</query>
+          <query>search = `runzero-index` sourcetype=assets earliest=-1d | dedup id | sort 0 - updated_at | table host, dvc_ip, os_product, asset_updated | rename host as "Asset Name", dvc_ip as "Primary IP", os_product as "OS", asset_updated as "Last Sync"</query>
           <earliest>$time_tok.earliest$</earliest>
           <latest>$time_tok.latest$</latest>
         </search>
@@ -72,7 +72,7 @@
       <title>Top Service Products</title>
       <chart>
         <search>
-          <query>sourcetype=assets | rename "service_products{}" AS service_products | eval service_products = split(mvjoin(service_products, " "), " ") | mvexpand service_products | where service_products != "" | top limit=20 service_products</query>
+          <query>search = `runzero-index` sourcetype=assets | rename "service_products{}" AS service_products | eval service_products = split(mvjoin(service_products, " "), " ") | mvexpand service_products | where service_products != "" | top limit=20 service_products</query>
           <earliest>$time_tok.earliest$</earliest>
           <latest>$time_tok.latest$</latest>
         </search>
@@ -84,7 +84,7 @@
       <title>Asset Hardware Vendors</title>
       <chart>
         <search>
-          <query>sourcetype=assets hw_vendor != "" | dedup id | stats count by hw_vendor | sort - count | head 15</query>
+          <query>search = `runzero-index` sourcetype=assets hw_vendor != "" | dedup id | stats count by hw_vendor | sort - count | head 15</query>
           <earliest>$time_tok.earliest$</earliest>
           <latest>$time_tok.latest$</latest>
         </search>
@@ -99,7 +99,7 @@
       <title>Environment Averages</title>
       <single>
         <search>
-          <query>sourcetype=assets | stats avg(service_count) as avg_services</query>
+          <query>search = `runzero-index` sourcetype=assets | stats avg(service_count) as avg_services</query>
           <earliest>$time_tok.earliest$</earliest>
           <latest>$time_tok.latest$</latest>
         </search>
@@ -110,7 +110,7 @@
       </single>
       <single>
         <search>
-          <query>sourcetype=assets | stats avg(software_count) as avg_software</query>
+          <query>search = `runzero-index` sourcetype=assets | stats avg(software_count) as avg_software</query>
           <earliest>$time_tok.earliest$</earliest>
           <latest>$time_tok.latest$</latest>
         </search>
