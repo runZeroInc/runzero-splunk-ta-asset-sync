@@ -15,7 +15,7 @@
       <title>Total Environment Risk Score</title>
       <single>
         <search>
-          <query>search = `runzero-index` sourcetype=assets | dedup id | stats sum(risk_rank) AS total_risk_score</query>
+          <query>`runzero-index` sourcetype=assets | dedup id | stats sum(risk_rank) AS total_risk_score</query>
           <earliest>$time_tok.earliest$</earliest>
           <latest>$time_tok.latest$</latest>
         </search>
@@ -30,7 +30,7 @@
       <title>Assets by Risk Category</title>
       <chart>
         <search>
-          <query>search = `runzero-index` sourcetype=assets risk != "" | dedup id | stats count AS asset_count BY risk | sort 0 - asset_count</query>
+          <query>`runzero-index` sourcetype=assets risk != "" | dedup id | stats count AS asset_count BY risk | sort 0 - asset_count</query>
           <earliest>$time_tok.earliest$</earliest>
           <latest>$time_tok.latest$</latest>
         </search>
@@ -46,7 +46,7 @@
       <title>Top 10 High Risk Assets</title>
       <table>
         <search>
-          <query>search = `runzero-index` sourcetype=assets | dedup id | sort - risk_rank | head 10 | table host, dvc_ip, risk, risk_rank | rename host AS "Asset Name", dvc_ip AS "IP Address", risk AS "Severity", risk_rank AS "Risk Score"</query>
+          <query>`runzero-index` sourcetype=assets | dedup id | sort - risk_rank | head 10 | table host, dvc_ip, risk, risk_rank | rename host AS "Asset Name", dvc_ip AS "IP Address", risk AS "Severity", risk_rank AS "Risk Score"</query>
           <earliest>$time_tok.earliest$</earliest>
           <latest>$time_tok.latest$</latest>
         </search>
@@ -61,7 +61,7 @@
       <title>Total Risk by OS Product</title>
       <chart>
         <search>
-          <query>search = `runzero-index` sourcetype=assets os_product != "" risk_rank != "" | dedup id | stats sum(risk_rank) AS risk_score BY os_product | sort 0 - risk_score | head 10</query>
+          <query>`runzero-index` sourcetype=assets os_product != "" risk_rank != "" | dedup id | stats sum(risk_rank) AS risk_score BY os_product | sort 0 - risk_score | head 10</query>
           <earliest>$time_tok.earliest$</earliest>
           <latest>$time_tok.latest$</latest>
         </search>
@@ -77,7 +77,7 @@
       <title>Vulnerability Severity Distribution</title>
       <chart>
         <search>
-          <query>search = `runzero-index` sourcetype=assets risk!="" | stats count by risk | sort -count</query>
+          <query>`runzero-index` sourcetype=assets risk!="" | stats count by risk | sort -count</query>
           <earliest>$time_tok.earliest$</earliest>
           <latest>$time_tok.latest$</latest>
         </search>
@@ -89,7 +89,7 @@
       <title>Asset with High or Critical Risk</title>
       <chart>
         <search>
-          <query>search = `runzero-index` sourcetype=assets risk="critical" | timechart span=1d count as critical_vulns</query>
+          <query>`runzero-index` sourcetype=assets risk="critical" | timechart span=1d count as critical_vulns</query>
           <earliest>$time_tok.earliest$</earliest>
           <latest>$time_tok.latest$</latest>
         </search>
@@ -104,7 +104,7 @@
       <title>Avg Vulnerabilities per Asset</title>
       <single>
         <search>
-          <query>search = `runzero-index` sourcetype=assets | stats avg(vulnerability_count) as avg_vulns</query>
+          <query>`runzero-index` sourcetype=assets | stats avg(vulnerability_count) as avg_vulns</query>
           <earliest>$time_tok.earliest$</earliest>
           <latest>$time_tok.latest$</latest>
         </search>
@@ -118,7 +118,7 @@
       <title>Max Vulnerabilities on Single Asset</title>
       <single>
         <search>
-          <query>search = `runzero-index` sourcetype=assets | stats max(vulnerability_count) as max_vulns</query>
+          <query>`runzero-index` sourcetype=assets | stats max(vulnerability_count) as max_vulns</query>
           <earliest>$time_tok.earliest$</earliest>
           <latest>$time_tok.latest$</latest>
         </search>
@@ -131,7 +131,7 @@
       <title>Outlier Score Distribution</title>
       <chart>
         <search>
-          <query>search = `runzero-index` sourcetype=assets outlier_score!="" | stats count by outlier_score</query>
+          <query>`runzero-index` sourcetype=assets outlier_score!="" | stats count by outlier_score</query>
           <earliest>$time_tok.earliest$</earliest>
           <latest>$time_tok.latest$</latest>
         </search>
