@@ -1,3 +1,5 @@
 *.gz
 *.spl
+appinspect/.venv/
+appinspect/*-report.json
 
