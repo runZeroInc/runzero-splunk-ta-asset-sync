@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Largely deprecated - see check.sh for a local testing solution
+
 AUTH=`echo ${SPLUNK_USER}:${SPLUNK_PASSWORD} | base64.exe -w 0`
 
 echo "[*] Getting an authentication token..."
