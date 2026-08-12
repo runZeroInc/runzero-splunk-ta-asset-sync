@@ -1,0 +1,4 @@
+splunktaucclib>=4.1.0
+requests
+# hashlib, json, and ssl are Python standard library modules and don't need
+# to be declared here.

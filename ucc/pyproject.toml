@@ -1,0 +1,10 @@
+[project]
+name = "runzero-ucc-build"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pip>=26.2.1",
+    "splunk-add-on-ucc-framework>=6.5.3",
+]
