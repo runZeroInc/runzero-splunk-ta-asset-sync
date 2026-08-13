@@ -13,19 +13,18 @@
 ```sh
 ./scripts/build.sh
 ```
-   This produces `TA_runzero_asset_sync-<version>.spl` in the repo root. **Always use this
-   script** rather than running `ucc-gen build`/`ucc-gen package` manually -- see the
-   "case preservation" comment block inside `scripts/build.sh` for why.
+This produces `TA_runzero_asset_sync-<version>.spl` in the repo root. Always use this
+script rather than running `ucc-gen build`/`ucc-gen package` manually -- see the
+"case preservation" comment block inside `scripts/build.sh` for why.
 
 5. Install the `.spl` in local Splunk Enterprise ("Manage Apps" → "Install app from file") and
-   smoke-test it (see "Testing an upgrade locally" below for what to check, particularly if
-   you touched `ucc/globalConfig.json`).
+smoke-test it (see testing notes in `docs/testing.md`).
 
 6. Run the local AppInspect checks (see below) and confirm no new `error`/`failure`/
-   `future_failure` results before uploading.
+`future_failure` results before uploading.
 
 7. In Splunkbase, under "My Apps" select "Manage App" and then select "In Splunkbase Classic".
-   On the version listing, select "New Version" and upload the `.spl`.
+On the version listing, select "New Version" and upload the `.spl`.
     * https://dev.splunk.com/enterprise/docs/releaseapps/splunkbase/managecontentonsplunkbase
 
 ## Running Splunk Cloud vetting (AppInspect) checks locally
