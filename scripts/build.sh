@@ -45,17 +45,7 @@ APP_DIR="$OUTPUT_DIR/$APP_NAME"
 # Case preservation patch
 # -----------------------------------------------------------------------
 # ucc-gen unconditionally lowercases the REST handler conf-type name it
-# derives from restRoot/tab-name for Configuration-page tabs (account,
-# settings) -- see splunk_add_on_ucc_framework's
-# RestEndpointBuilder.conf_name, which defaults to `self.name.lower()`
-# (commands/rest_builder/endpoint/base.py). There is a documented `"conf"`
-# globalConfig.json key, but it is only wired through to the *entity*
-# object, never to the endpoint's own conf_name used for file generation --
-# confirmed by reading the ucc-gen 6.5.3 source and by empirically
-# rebuilding with an explicit `"conf"` override set on the account tab,
-# which had no effect (still produced ta_runzero_asset_sync_account.conf.spec,
-# lowercase). This does not appear to be tracked in any existing upstream
-# GitHub issue as of ucc-gen 6.5.3.
+# derives from restRoot/tab-name for Configuration-page tabs.
 #
 # For an add-on whose original AOB-era name used mixed case
 # (TA_runzero_asset_sync), this silently renames the account/settings conf
