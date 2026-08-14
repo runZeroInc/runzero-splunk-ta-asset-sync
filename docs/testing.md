@@ -44,14 +44,16 @@ directory — it only adds/overwrites files present in the new package.
     - The input resumes from its existing checkpoint
     - No errors in `splunkd.log` or the browser console referencing missing/invalid conf
 
-## 1. Fresh install
+## Basic testing procedure
+
+### 1. Fresh install
 
 - Install the `.spl` on a clean Splunk Enterprise
 - Confirm the "Configuration" page loads with Account / Proxy / Logging tabs and no
   JavaScript console errors.
 - Confirm the "Inputs" page loads with the Assets input table.
 
-## 2. Account tab
+### 2. Account tab
 
 - Create an account
 - Verify validators fire
@@ -59,24 +61,24 @@ directory — it only adds/overwrites files present in the new package.
 - Case-sensitivity regression check: confirm the saved credential is stored under the
   mixed-case `TA_runzero_asset_sync_account` conf/stanza name, not a lowercased variant.
 
-## 3. Proxy tab
+### 3. Proxy tab
 
 - Enable proxy, set type/url/port/username/password/`proxy_rdns`. Save and reopen to confirm
   persistence.
 - Disable proxy, confirm the input still runs successfully without a proxy configured.
 
-## 4. Logging tab
+### 4. Logging tab
 
 - Change `loglevel` (default `INFO`) to `DEBUG`, ensure persistence.
 
-## 5. Inputs — create/edit/delete
+### 5. Inputs — create/edit/delete
 
 - Create an "Assets" input referencing an account (`global_account`), set index, `sync_type`
   (New/Updated/All), `import_services`, `search_filter`, `fields`, `interval`, `batch_size`.
 - Confirm the table view and "more info" expanded view render all fields correctly.
 - Edit an existing input, clone it, and delete it.
 
-## 6. Data collection (core business logic)
+### 6. Data collection (core business logic)
 
 - With a real (or test) runZero account, let the input run. Confirm events land in the
   configured index with the expected fields.
@@ -84,16 +86,16 @@ directory — it only adds/overwrites files present in the new package.
   differs as expected.
 - If you need to trigger a re-run, toggle the Input to disabled, then enabled again.
 
-## 7. Checkpointing
+### 7. Checkpointing
 
 - Run the input once, note the last-imported timestamp. Run again and confirm only newer assets
   are pulled.
 
-## 8. Dashboards & nav
+### 8. Dashboards & nav
 
 - Confirm `asset_overview.xml` and `asset_risk.xml` dashboards load without errors, and that the
   nav menu links to them correctly.
 
-## 9. AppInspect
+### 9. AppInspect
 
 - Run `./scripts/check.sh` and confirm no new `error`/`failure`/`future_failure` results.

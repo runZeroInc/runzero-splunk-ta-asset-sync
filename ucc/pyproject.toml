@@ -1,7 +1,7 @@
 [project]
 name = "runzero-ucc-build"
 version = "0.1.0"
-description = "Add your description here"
+description = "Main project for the runZero Splunk Technology Add-on"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
