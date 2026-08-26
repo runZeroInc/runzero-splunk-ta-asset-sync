@@ -1,0 +1,8 @@
+[project]
+name = "runzero-appinspect"
+version = "0.1.0"
+description = "Standalone uv project for running Splunk AppInspect locally against this add-on."
+requires-python = ">=3.12"
+dependencies = [
+    "splunk-appinspect>=4.3.0",
+]

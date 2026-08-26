@@ -1,3 +1,8 @@
 *.gz
 *.spl
+appinspect/.venv/
+appinspect/report.json
+appinspect/*-report.json
+ucc/.venv/
+ucc/output/
 
