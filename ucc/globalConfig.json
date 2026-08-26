@@ -2,7 +2,7 @@
     "meta": {
         "name": "TA_runzero_asset_sync",
         "displayName": "runZero Asset Sync",
-        "version": "3.3.4",
+        "version": "3.3.5",
         "restRoot": "TA_runzero_asset_sync",
         "schemaVersion": "0.0.10",
         "supportedPythonVersion": [

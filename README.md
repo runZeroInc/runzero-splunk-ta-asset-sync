@@ -23,9 +23,20 @@ smoke-test it (see testing notes in `docs/testing.md`).
 6. Run the local AppInspect checks (see below) and confirm no new `error`/`failure`/
 `future_failure` results before uploading.
 
-7. In Splunkbase, under "My Apps" select "Manage App" and then select "In Splunkbase Classic".
-On the version listing, select "New Version" and upload the `.spl`.
-    * https://dev.splunk.com/enterprise/docs/releaseapps/splunkbase/managecontentonsplunkbase
+7. In Splunkbase, go to our app (https://splunkbase.splunk.com/app/6549)
+    * The below seems to change with some regularity. If you come across a difference in the release
+        process, please note it for future maintainers.
+    * Select "Manage App"
+        * You may need to be added to manage the app, ask a team member for help if needed.
+    * On the version listing, select "Create new release" and upload the `.spl`.
+    * Once this passes basic validation, "Save and continue".
+    * Full AppInspect runs now
+        * Once that runs, "Save and continue".
+    * Populate release notes
+        * "Updated version compatibility" or similar should be fine.
+        * Select all versions (9.0 - 10.X) for compatibility.
+        * Select no CIM versions for support.
+        * "Save and continue"
 
 ## Running Splunk Cloud vetting (AppInspect) checks locally
 
