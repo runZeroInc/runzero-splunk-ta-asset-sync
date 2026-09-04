@@ -36,13 +36,18 @@ directory — it only adds/overwrites files present in the new package.
 
 6. Restart Splunk, then hard-refresh the browser to rule out stale static assets.
 
-7. Compare after state to recorded before state:
+7. Run the input, by toggling its status off and then on again.
+
+8. Compare after state to recorded before state:
     - Account tab still shows the account, with data
     - Proxy tab still shows all previously-saved values
     - Logging tab still shows the previously-selected level
     - The Assets input still exists with all previously-configured fields intact
     - The input resumes from its existing checkpoint
+    - New assets are picked up on the subsequent run
     - No errors in `splunkd.log` or the browser console referencing missing/invalid conf
+
+9. Make absolutely sure that new assets are picked up on the subsequent run as expected!
 
 ## Basic testing procedure
 
