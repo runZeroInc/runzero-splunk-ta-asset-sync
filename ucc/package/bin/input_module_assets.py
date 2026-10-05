@@ -78,7 +78,7 @@ def collect_events(helper, ew):
     opt_search_filter = helper.get_arg('search_filter')
     if opt_search_filter == None:
         opt_search_filter = ""
-    opt_services = helper.get_arg('services')
+    opt_services = helper.get_arg('import_services')
     if opt_services == None:
         opt_services = ""
     opt_page_size = helper.get_arg('batch_size')
@@ -117,11 +117,22 @@ def collect_events(helper, ew):
     cnt = 0
     helper.log_debug(f"Fetching assets {opt_sync_type} since {checkpoint_ts}")
     while True:
+        parameters = {"page_size": opt_page_size}
+        if opt_search_filter != "":
+            parameters["search"] = opt_search_filter
+        if opt_services != "":
+            parameters["services"] = opt_services
+        if opt_fields != "":
+            parameters["fields"] = opt_fields
+        if start_key != "":
+            parameters["start_key"] = start_key
+
         if opt_sync_type == "all":
-            url = f"https://{api_endpoint}/api/v1.0/export/org/assets.json?search={opt_search_filter}&services={opt_services}&fields={opt_fields}&start_key={start_key}&page_size={opt_page_size}"
+            url = f"https://{api_endpoint}/api/v1.0/export/org/assets.json"
         else:
-            url = f"https://{api_endpoint}/api/v1.0/export/org/assets/sync/{opt_sync_type}/assets.json?search={opt_search_filter}&since={opt_since}&services={opt_services}&fields={opt_fields}&start_key={start_key}&page_size={opt_page_size}"
-        response = helper.send_http_request(url, "GET", parameters=None, payload=None,
+            url = f"https://{api_endpoint}/api/v1.0/export/org/assets/sync/{opt_sync_type}/assets.json"
+            parameters["since"] = opt_since
+        response = helper.send_http_request(url, "GET", parameters=parameters, payload=None,
                                             headers=headers, cookies=None, verify=tls_verify, cert=None,
                                             timeout=(10.0, 300), use_proxy=use_proxy)
         # check the response status, if the status is not sucessful, raise requests.HTTPError
